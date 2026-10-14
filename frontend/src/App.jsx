@@ -44,7 +44,7 @@ function App() {
           <Route path={"/dashboard"} element={<Dashboard />}></Route>
           <Route path={"/post/report_lost_items"} element={<Post />}></Route>
           <Route path={"/post/report_found_items"} element={<Post />}></Route>
-          <Route path={"/profile"} element={<Profile />}></Route>
+          <Route path={"/profile"} element={<Profile setUserAuth={setUserAuth}/>}></Route>
           <Route path={"*"} element={<PageNotFound />}></Route>
         </Routes>
       </BrowserRouter>

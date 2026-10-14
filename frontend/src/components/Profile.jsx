@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { 
   User, 
   CalendarBlank, 
   MapPin, 
-  CaretRight 
+  CaretRight,
+  UserIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  ElevatorIcon
 } from "@phosphor-icons/react";
 
-export default function Profile() {
+export default function Profile({setUserAuth}) {
   const [activeTab, setActiveTab] = useState("lost");
+  const [edit, setEdit] = useState(false);
 
   // Mock data based on the provided image
   const mockLostItems = [
@@ -51,8 +56,16 @@ export default function Profile() {
   const currentItems = activeTab === "lost" ? mockLostItems : mockFoundItems;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center py-10 px-4">
-      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-sm border border-gray-100 p-8">
+    <>
+    {/* Overlay */}
+      <div
+        className="overlay absolute inset-0 bg-black/60 z-1"
+        onClick={() => {
+          setUserAuth({ state: false, page: "" });
+        }}
+      ></div>
+    <div className="min-h-screen  flex justify-center py-10 px-4 mt-15">
+      <div className="bg-white w-full max-w-xl rounded-2xl shadow-sm p-8">
         
         {/* Header */}
         <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Profile</h1>
@@ -60,7 +73,12 @@ export default function Profile() {
         {/* User Info Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-24 h-24 bg-[#5b61f4] rounded-full flex items-center justify-center text-white shadow-md">
+            <div onClick={() => setActiveTab("lost")} className={`w-24 h-24 rounded-full 
+            flex items-center justify-center text-white shadow-md ${
+            activeTab === "lost"
+            ? "bg-(--green)"
+            : "bg-[#B47B27]"
+            }`}>
               <User size={48} weight="fill" />
             </div>
             <div>
@@ -68,7 +86,13 @@ export default function Profile() {
               <p className="text-gray-500 mt-1 text-sm sm:text-base">Patel@gmail.com</p>
             </div>
           </div>
-          <button className="border-2 border-indigo-100 text-[#5b61f4] font-semibold px-6 py-2 rounded-lg hover:bg-indigo-50 transition-colors duration-200">
+          <button onClick={() => setEdit(true)}   className={`border-2 border-indigo-100 text-[#25201B] font-bold 
+          px-6 py-2 rounded-lg transition-colors duration-200 bg-[#FAF7F0] cursor-pointer
+          ${
+            activeTab === "found"
+            ? "hover:bg-[#B47B27] hover:text-(--pure-white)"
+            : "hover:bg-(--green) hover:text-(--pure-white)"
+            }`}>
             Edit Profile
           </button>
         </div>
@@ -81,9 +105,9 @@ export default function Profile() {
           <div className="flex border-b border-gray-200 mb-6">
             <button
               onClick={() => setActiveTab("lost")}
-              className={`flex-1 pb-3 text-center font-medium text-sm sm:text-base transition-colors ${
+              className={`flex-1 pb-3 pt-2 text-center text-sm sm:text-base rounded-tl-lg font-bold transition-colors ${
                 activeTab === "lost" 
-                  ? "text-[#5b61f4] border-b-2 border-[#5b61f4]" 
+                  ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)" 
                   : "text-gray-400 hover:text-gray-600"
               }`}
             >
@@ -91,9 +115,9 @@ export default function Profile() {
             </button>
             <button
               onClick={() => setActiveTab("found")}
-              className={`flex-1 pb-3 text-center font-medium text-sm sm:text-base transition-colors ${
+              className={`flex-1 pb-1 text-center text-sm sm:text-base rounded-tr-lg font-bold transition-colors ${
                 activeTab === "found" 
-                  ? "text-[#5b61f4] border-b-2 border-[#5b61f4]" 
+                  ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)" 
                   : "text-gray-400 hover:text-gray-600"
               }`}
             >
@@ -157,5 +181,109 @@ export default function Profile() {
         </div>
       </div>
     </div>
+
+    <div className="container2 w-full max-w-sm min-h-100 rounded-xl border border-black z-2 
+    bg-(--pure-white)
+    absolute
+          left-1/2
+          top-1/2
+          -translate-x-1/2
+          -translate-y-1/2">
+            {/* User Icon */}
+        <div className="flex justify-center m-5">
+          <div className="">
+            <svg
+            width="100"
+            height="100"
+            viewBox="0 0 200 200"
+            xmlns="http://www.w3.org/2000/svg"
+            className="rounded-full"
+          >
+            <defs>
+              {/* Orange Gradient */}
+              <linearGradient
+                id="orangeGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stopColor="#C2872E" />
+                <stop offset="50%" stopColor="#B47B27" />
+                <stop offset="100%" stopColor="#A9701E" />
+              </linearGradient>
+            </defs>
+
+            {/* Background Circle */}
+            <circle cx="100" cy="100" r="98" fill="url(#orangeGradient)" />
+
+            {/* User Head */}
+            <circle cx="100" cy="80" r="28" fill="#FFFFFF" fillOpacity="0.9" />
+
+            {/* User Body */}
+            <path
+              d="
+                M 50 165
+                C 50 125 72 108 100 108
+                C 128 108 150 125 150 165
+                Z
+              "
+              fill="#FFFFFF"
+              fillOpacity="0.9"
+            />
+
+            {/* Circle Clip */}
+            <clipPath id="orangeCircleClip">
+              <circle cx="100" cy="100" r="98" />
+            </clipPath>
+          </svg>
+
+          </div>
+        </div>
+        <form className="flex flex-col gap-4 ml-5.5">
+          <div className="flex border rounded-lg px-2 py-1 w-85">
+              <UserIcon size={24} className="text-(--orange)" />
+
+              <input
+                type="text"
+                placeholder="Name"
+                name="name"
+                id="name"
+                value="chahat"
+                onChange="a"
+                className="w-70 px-2 focus:outline-none focus:ring-0"
+              />
+            </div>
+            <div className="flex border rounded-lg px-2 py-1 w-85">
+              <PhoneIcon size={24} className="text-(--orange)" />
+
+              <input
+                type="tel"
+                placeholder="Phone No"
+                name="phone_no"
+                id="phone_no"
+                value="8799546099"
+                onChange="8799546099"
+                maxLength={10}
+                className="w-70 px-2 focus:outline-none focus:ring-0"
+              />
+            </div>
+            <div className="flex border rounded-lg px-2 py-1 w-85">
+              <EnvelopeIcon size={24} className="text-(--orange)" />
+
+              <input
+                type="text"
+                placeholder="Email"
+                name="email"
+                id="signup-email"
+                value="chahat1008@gmail.com"
+                onChange="chahat1008@gmail.com"
+                className="w-70 px-2 focus:outline-none focus:ring-0"
+              />
+            </div>
+        </form>
+      
+    </div>
+  </>
   );
 }

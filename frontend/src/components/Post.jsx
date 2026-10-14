@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CloudArrowUpIcon } from "@phosphor-icons/react";
 import { postLost, postFound } from "../api/PostApi";
 

@@ -23,7 +23,6 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
 
   function onLostChange(event) {
     const { name, value, type, files } = event.target;
-    console.log(lostItemDetails.date)
     setLostItemDetails((prev) => ({
       ...prev,
       [name]: type === "file" ? files[0] : value,

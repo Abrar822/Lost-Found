@@ -10,7 +10,7 @@ import {
   ShieldCheckIcon,
   ArrowRightIcon,
 } from "@phosphor-icons/react";
-import { userLogin, userSignup } from "../api/AuthApi";
+import { userLogin, userSignup, generateOtp } from "../api/AuthApi";
 
 export default function UserAuth({
   setUserAuth,
@@ -65,6 +65,17 @@ export default function UserAuth({
       ...prev,
       [event.target.name]: event.target.value,
     }));
+  }
+
+  async function genOtp(event) {
+    event.preventDefault()
+    const data = await generateOtp(signupData.email)
+    if (!data) {
+      setAlert({msg:"Failed to generate OTP", state:true})
+    }
+    else {
+      setAlert({msg:"OTP is sent to email sucessfully and valid for only 5 minutes "})
+    }
   }
 
   async function onSubmit(event) {
@@ -543,7 +554,7 @@ export default function UserAuth({
                   hover:shadow-md
                   active:scale-95
                 "
-                onClick={(event) => event.preventDefault()}
+                onClick={genOtp}
               >
                 Generate
               </button>

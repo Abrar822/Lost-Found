@@ -106,7 +106,7 @@ function App() {
                 setAlert={setAlert}
                 setUserAuth={setUserAuth}
               >
-                <Post setActivePost={setActivePost} activePost="lost" />
+                <Post setActivePost={setActivePost} activePost="lost" loading={loading} setLoading={setLoading} setAlert={setAlert}/>
               </ProtectedRoute>
             }
           ></Route>
@@ -118,7 +118,7 @@ function App() {
                 setAlert={setAlert}
                 setUserAuth={setUserAuth}
               >
-                <Post setActivePost={setActivePost} activePost="found" />
+                <Post setActivePost={setActivePost} activePost="found" loading={loading} setLoading={setLoading} setAlert={setAlert}/>
               </ProtectedRoute>
             }
           ></Route>

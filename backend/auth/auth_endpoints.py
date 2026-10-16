@@ -1,13 +1,45 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-from ..pydantic_models.schemas import AdminSignup, UserSignup, Login
+from ..pydantic_models.schemas import AdminSignup, UserSignup, Login, GenerateOtp
 from ..db_operations.db_connect import db_connect
 from psycopg2.extras import RealDictCursor
 from .security import hash_password, verify_password
 from .jwt import create_jwt
+import secrets
+from datetime import datetime,timezone,timedelta
+from email.message import EmailMessage
+from dotenv import load_dotenv
+import os
+import smtplib
+
+# load_dotenv('./backend/.env')
 
 db_endpoints = APIRouter()
 
-
+def send_otp(email:str,otp:str):
+    smtp_email = os.getenv('SMTP_EMAIL')
+    smtp_password = os.getenv('SMTP_EMAIL_PASSWORD')
+    if not smtp_email or not smtp_password:
+        raise RuntimeError(
+            "SMTP_EMAIL or SMTP_EMAIL_PASSWORD is missing from .env"
+        )
+    msg = EmailMessage()
+    msg["Subject"] = "Your Lost&Found Signup OTP"
+    # msg["From"] = os.getenv('SMTP_EMAIL')
+    msg["From"] = smtp_email
+    msg["To"] = email
+    
+    msg.set_content(
+        f"Your OTP is {otp}. It expires in 5 minutes."
+    )
+    with smtplib.SMTP("smtp.gmail.com",587,timeout=30) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login(
+            smtp_email,smtp_password
+        )
+        smtp.send_message(msg)
+    
 @db_endpoints.post("/admin_signup", status_code=status.HTTP_201_CREATED)
 def admin_signup(admin: AdminSignup, conn=Depends(db_connect)):
     tupl = (
@@ -46,7 +78,35 @@ def admin_signup(admin: AdminSignup, conn=Depends(db_connect)):
         if cur:
             cur.close()
 
-
+@db_endpoints.post('/generate_otp',status_code=status.HTTP_201_CREATED)
+def generate_otp(data:GenerateOtp, conn=Depends(db_connect)):
+    cur = None
+    try:
+        email = data.email
+        otp = f"{secrets.randbelow(1_000_000):06d}"
+        hashed_otp = hash_password(otp)
+        expiry = datetime.now(timezone.utc) + timedelta(minutes=5)
+        query = """INSERT INTO "OtpDetails" ("Email","Otp","Expiry") VALUES (%s,%s,%s) ON CONFLICT ("Email") DO UPDATE SET "Otp" = EXCLUDED."Otp", "Expiry" = EXCLUDED."Expiry" """
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute(query,(email,hashed_otp,expiry))
+        conn.commit()
+        send_otp(email,str(otp))
+        return {
+            "message": "OTP sent successfully to your email.",
+            "expires_in": 300,
+        }
+    except Exception as err:
+        if conn:
+            conn.rollback()
+        print("OTP ERROR:", repr(err))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Some Error Occurred" + str(err),
+        )
+    finally:
+        if cur:
+            cur.close()
+        
 @db_endpoints.post("/user_signup", status_code=status.HTTP_201_CREATED)
 def user_signup(user: UserSignup, conn=Depends(db_connect)):
     cur = None
@@ -66,7 +126,7 @@ def user_signup(user: UserSignup, conn=Depends(db_connect)):
             )
 
         # check the user exists
-        query = """SELECT "Name" FROM "User" WHERE "Email" = %s"""
+        query = """SELECT "Name" FROM "User" WHERE "Email" = %s;"""
         cur.execute(query, (user.email,))
         result = cur.fetchone()
         if result:
@@ -74,6 +134,27 @@ def user_signup(user: UserSignup, conn=Depends(db_connect)):
                 status_code=status.HTTP_409_CONFLICT, detail=f"The user already exists."
             )
 
+        #Verify OTP
+        query = """SELECT "Otp","Expiry" FROM "OtpDetails" WHERE "Email" = %s;"""
+        cur.execute(query, (user.email,))
+        result = cur.fetchone()
+        if result:
+            hashed_otp = result['Otp']
+            expiry = result['Expiry']
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Please regenerate the OTP"
+            )
+        if isinstance(expiry, str):
+            expiry = datetime.fromisoformat(expiry)
+        if datetime.now(timezone.utc) >= expiry:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="OTP expired! Please regenerate OTP")
+        if not verify_password(user.otp, hashed_otp):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="Please enter correct OTP")
+        
         tupl = (o_id, user.email, user.phone_number, hash_password(user.password), user.name)
         query = """INSERT INTO "User" ("O_id", "Email", "Phone_Number", "Password", "Name") 
             VALUES (%s, %s, %s, %s, %s);"""
@@ -87,7 +168,7 @@ def user_signup(user: UserSignup, conn=Depends(db_connect)):
             conn.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Some Error Occurred" + str(err),
+            detail=f"Some Error Occurred " + str(err),
         )
     finally:
         if cur:
@@ -96,6 +177,7 @@ def user_signup(user: UserSignup, conn=Depends(db_connect)):
 
 @db_endpoints.post("/admin_login", status_code=status.HTTP_200_OK)
 def admin_login(admin: Login, conn=Depends(db_connect)):
+    
     cur = None
     try:
         cur = conn.cursor(cursor_factory=RealDictCursor)

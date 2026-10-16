@@ -1,3 +1,22 @@
+export function generateOtp(email) {
+  return fetch("http://127.0.0.1:8000/generate_otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: email
+    })
+  })
+  .then(async (res) => {
+      let data = await res.json();
+      if (!res.ok) {
+        throw new Error(`${data.detail}`);
+      }
+      return data;
+    })
+}
+
 export function userSignup(user) {
   return fetch("http://127.0.0.1:8000/user_signup", {
     method: "POST",

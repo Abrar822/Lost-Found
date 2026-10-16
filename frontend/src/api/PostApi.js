@@ -1,13 +1,17 @@
 import getToken from "../helper/getToken"
-let token = getToken()
+
 
 export async function postLost(item) {
+    let token = getToken()
+    if (!token) {
+        throw new Error("JWT token not found. Please log in again.");
+    }
     console.log(token)
     let response = await fetch('http://127.0.0.1:8000/post_lost', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-             Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
             item_name: item.item_name,
@@ -28,11 +32,14 @@ export async function postLost(item) {
 
 export async function postFound(item) {
     let token = getToken()
+    if (!token) {
+        throw new Error("JWT token not found. Please log in again.");
+    }
     let response = await fetch('http://127.0.0.1:8000/post_found', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-             Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
             item_name: item.item_name,

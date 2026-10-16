@@ -60,3 +60,6 @@ class ItemDetails(BaseModel):
     date: str
     location: str
     image: Optional[str] = None
+    
+class GenerateOtp(BaseModel):
+    email: EmailStr

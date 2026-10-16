@@ -14,8 +14,9 @@ export default function ProtectedRoute({ children, setIsLog, setAlert, setUserAu
     .map((cookie) => cookie.trim())
     .find((cookie) => cookie.startsWith("user_jwt="))
     ?.split("=")[1];
-
-  if (!token || !isTokenValid(token)) {
+  let res = isTokenValid(token)
+  if (!token || !res) {
+    console.log('not token')
     setIsLog(false)
     setAlert({msg: 'Session Expired. Please Log In again.', state: true})
     setUserAuth({page: 'login', state: true})

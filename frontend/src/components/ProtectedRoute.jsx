@@ -1,5 +1,10 @@
 import { Navigate } from "react-router-dom";
-export default function ProtectedRoute({ children, setIsLog, setAlert, setUserAuth }) {
+export default function ProtectedRoute({
+  children,
+  setIsLog,
+  setAlert,
+  setUserAuth,
+}) {
   function isTokenValid(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -14,12 +19,11 @@ export default function ProtectedRoute({ children, setIsLog, setAlert, setUserAu
     .map((cookie) => cookie.trim())
     .find((cookie) => cookie.startsWith("user_jwt="))
     ?.split("=")[1];
-  let res = isTokenValid(token)
+  let res = isTokenValid(token);
   if (!token || !res) {
-    console.log('not token')
-    setIsLog(false)
-    setAlert({msg: 'Session Expired. Please Log In again.', state: true})
-    setUserAuth({page: 'login', state: true})
+    setIsLog(false);
+    setAlert({ msg: "Session Expired. Please Log In again.", state: true });
+    setUserAuth({ page: "login", state: true });
     return <Navigate to="/dashboard" replace />;
   }
 

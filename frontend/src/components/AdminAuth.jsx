@@ -19,7 +19,9 @@ export default function AdminAuth({
   alert,
   loading,
   setLoading,
-  setIsLog
+  setIsLog,
+  userRole,
+  setUserRole
 }) {
   const [signupData, setSignupData] = useState({
     organization_name: "",
@@ -84,6 +86,7 @@ export default function AdminAuth({
           let token = response.access_token
           document.cookie = `admin_jwt=${token};path=/;`
           setAdminAuth({state: false, page: ''})
+          setUserRole('admin')
           setIsLog(true)
         }
         setLoading(false)

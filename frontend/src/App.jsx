@@ -11,9 +11,12 @@ import PageNotFound from "./components/PageNotFound";
 import Alert from "./components/Alert";
 import ProtectedRoute from "./components/ProtectedRoute";
 import {getUserDetails} from "./api/ProfileApi"
+import { useUserContext } from "./contexts/UserRoleContext";
+
 // HttpOnly + Secure + SameSite cookie
 // what is it
 function App() {
+  const {userRole, setUserRole} = useUserContext()
   const [loading, setLoading] = useState(false);
   const [userAuth, setUserAuth] = useState({
     state: false,
@@ -47,7 +50,7 @@ function App() {
   let tokenAvailable = document.cookie
     .split(";")
     .map((cookie) => cookie.trim())
-    .find((cookie) => cookie.startsWith("user_jwt="))
+    .find((cookie) => cookie.startsWith(`${userRole}_jwt=`))
     ?.split("=")[1];
   const [isLog, setIsLog] = useState(
     tokenAvailable ? isTokenValid(tokenAvailable) : false,
@@ -95,6 +98,8 @@ function App() {
             loading={loading}
             setLoading={setLoading}
             setIsLog={setIsLog}
+            userRole={userRole}
+            setUserRole={setUserRole}
           />
         )}
         {adminAuth.state && !userAuth.state && (
@@ -108,6 +113,8 @@ function App() {
             loading={loading}
             setLoading={setLoading}
             setIsLog={setIsLog}
+            userRole={userRole}
+            setUserRole={setUserRole}
           />
         )}
         <Navbar
@@ -115,6 +122,7 @@ function App() {
           isLog={isLog}
           setIsLog={setIsLog}
           setAlert={setAlert}
+          userRole={userRole}
         />
 
         <Routes>

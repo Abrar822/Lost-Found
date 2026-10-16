@@ -6,15 +6,14 @@ from ..auth.jwt import get_u_id
 
 post_endpoints = APIRouter()
 
-
 @post_endpoints.post("/post_lost", status_code=status.HTTP_201_CREATED)
-def lostItem(item: PostItem, conn=Depends(db_connect), user_id=Depends(get_u_id)):
+def lostItem(item: PostItem, conn=Depends(db_connect), user_id : int =Depends(get_u_id)):
     cursor = None
     try:
         lost_item = item.model_dump()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(
-            'INSERT INTO "Loser" ("U_id","Item_Name","Description","Date_Lost","Location_Lost","Image_Upload") VALUES (%s,%s,%s,%s,%s) RETURNING *;',
+            'INSERT INTO "Loser" ("U_id","Item_Name","Description","Date_Lost","Location_Lost","Image_Upload") VALUES (%s,%s,%s,%s,%s,%s) RETURNING *;',
             (
                 user_id,
                 lost_item["item_name"],
@@ -50,13 +49,13 @@ def lostItem(item: PostItem, conn=Depends(db_connect), user_id=Depends(get_u_id)
 
 
 @post_endpoints.post("/post_found", status_code=status.HTTP_201_CREATED)
-def foundItem(item: PostItem, conn=Depends(db_connect), user_id=Depends(get_u_id)):
+def foundItem(item: PostItem, conn=Depends(db_connect), user_id : int =Depends(get_u_id)):
     cursor = None
     try:
         found_item = item.model_dump()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(
-            'INSERT INTO "Finder" ("U_id","Item_Name","Description","Date_Found","Location_Lost","Image_Upload") VALUES (%s,%s,%s,%s,%s) RETURNING *;',
+            'INSERT INTO "Finder" ("U_id","Item_Name","Description","Date_Found","Location_Lost","Image_Upload") VALUES (%s,%s,%s,%s,%s,%s) RETURNING *;',
             (
                 user_id,
                 found_item["item_name"],

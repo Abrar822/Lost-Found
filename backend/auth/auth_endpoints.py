@@ -66,7 +66,7 @@ def user_signup(user: UserSignup, conn=Depends(db_connect)):
             )
 
         # check the user exists
-        query = """SELECT "Name" FROM "Organization" WHERE "Email" = %s"""
+        query = """SELECT "Name" FROM "User" WHERE "Email" = %s"""
         cur.execute(query, (user.email,))
         result = cur.fetchone()
         if result:
@@ -74,9 +74,9 @@ def user_signup(user: UserSignup, conn=Depends(db_connect)):
                 status_code=status.HTTP_409_CONFLICT, detail=f"The user already exists."
             )
 
-        tupl = (o_id, user.email, user.phone_number, hash_password(user.password))
-        query = """INSERT INTO "User" ("O_id", "Email", "Phone_Number", "Password") 
-            VALUES (%s, %s, %s, %s);"""
+        tupl = (o_id, user.email, user.phone_number, hash_password(user.password), user.name)
+        query = """INSERT INTO "User" ("O_id", "Email", "Phone_Number", "Password", "Name") 
+            VALUES (%s, %s, %s, %s, %s);"""
         cur.execute(query, tupl)
         conn.commit()
         return {"message": "User registered successfully."}

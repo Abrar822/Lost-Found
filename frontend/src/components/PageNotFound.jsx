@@ -1,7 +1,14 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
-export default function PageNotFound() {
+export default function PageNotFound({ setUserAuth }) {
   const navigate_not_found = useNavigate();
+  useEffect(() => {
+    setUserAuth({
+      page: "login",
+      state: true,
+    });
+  }, []);
   return (
     <>
       <div className="min-h-screen w-full flex flex-col justify-center items-center text-(--text-1) px-4">
@@ -13,8 +20,8 @@ export default function PageNotFound() {
         </div>
 
         <p className="text-xl font-medium mt-4 text-center max-w-md">
-          The page you are looking for doesn't exist, has been moved, or is
-          temporarily unavailable.
+          The page you are looking for is not accessible without login, doesn't
+          exist, has been moved, or is temporarily unavailable.
         </p>
 
         <button

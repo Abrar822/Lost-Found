@@ -8,26 +8,29 @@ import {
   CodeIcon,
   ArrowLeftIcon,
 } from "@phosphor-icons/react";
+import { adminLogin, adminSignup } from "../api/AuthApi";
 
 export default function AdminAuth({
   setUserAuth,
   userAuth,
   adminAuth,
   setAdminAuth,
+  setAlert,
+  alert,
+  loading,
+  setLoading,
+  setIsLog
 }) {
   const [signupData, setSignupData] = useState({
-    name: "",
-    phone_no: "",
+    organization_name: "",
     email: "",
     code: "",
     password: "",
     c_password: "",
-    otp: "",
   });
 
   const [loginData, setLoginData] = useState({
     email: "",
-    code: "",
     password: "",
   });
 
@@ -60,23 +63,70 @@ export default function AdminAuth({
     }));
   }
 
-  function onSubmit(event) {
+  async function onSubmit(event) {
     event.preventDefault();
-    adminAuth.page === "login"
-      ? setLoginData({
-          email: "",
-          code: "",
-          password: "",
-        })
-      : setSignupData({
-          name: "",
-          phone_no: "",
-          email: "",
-          code: "",
-          password: "",
-          c_password: "",
-          otp: "",
-        });
+
+    if (adminAuth.page === "login") {
+      if (loginData.password === "" || loginData.email === "") {
+        setAlert({ msg: "All the details must be filled.", state: true });
+        return;
+      }
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.email);
+      if(!isEmailValid) {
+        setAlert({msg: 'Enter a valid email.', state: true})
+        return;
+      }
+      try {
+        setLoading(true)
+        let response = await adminLogin(loginData);
+        if(response) {
+          setAlert({msg: 'Login Successful.', state: true})
+          let token = response.access_token
+          document.cookie = `admin_jwt=${token};path=/;`
+          setAdminAuth({state: false, page: ''})
+          setIsLog(true)
+        }
+        setLoading(false)
+      } catch (err) {
+        setAlert({ msg: "Login Failed. " + String(err.message), state: true });
+      } finally {
+        setLoading(false)
+      }
+    } else if (adminAuth.page == "signup") {
+      if (
+        signupData.password === "" ||
+        signupData.c_password === "" ||
+        signupData.code === "" ||
+        signupData.email === "" ||
+      signupData.organization_name === '') {
+        setAlert({ msg: "All the details must be filled.", state: true });
+        return;
+      }
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupData.email);
+      if(!isEmailValid) {
+        setAlert({msg: 'Enter a valid email.', state: true})
+        return
+      }
+      try {
+        if (signupData.password !== signupData.c_password) {
+          setAlert({ msg: "Passwords do not match.", state: true });
+          return;
+        }
+        setLoading(true)
+        let response = await adminSignup(signupData);
+        if (response) {
+          setAlert({msg: 'Signup Successful.', state: true})
+          setAdminAuth({
+            state: true,
+            page: "login",
+          });
+        }
+      } catch (err) {
+        setAlert({ msg: "Signup Failed. " + String(err.message), state: true });
+      } finally {
+        setLoading(false)
+      }
+    }
   }
   return (
     <>
@@ -241,10 +291,10 @@ export default function AdminAuth({
             </div>
 
             <button
-              className="flex flex-col items-center justify-center font-semibold border rounded-lg w-full h-10 hover:cursor-pointer bg-[linear-gradient(90deg,#255A4F_0%,#2F6F62_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(47,111,98,0.5)] hover:brightness-110"
+              className="flex gap-6 items-center justify-center font-semibold border rounded-lg w-full h-10 hover:cursor-pointer bg-[linear-gradient(90deg,#255A4F_0%,#2F6F62_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(47,111,98,0.5)] hover:brightness-110"
               onClick={onSubmit}
             >
-              Login
+              {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>} <span>Login</span>
             </button>
 
             <div className="flex justify-center h-9 mb-4 ">
@@ -270,9 +320,9 @@ export default function AdminAuth({
               <input
                 type="text"
                 placeholder="Organization Name"
-                name="name"
-                id="name"
-                value={signupData.name}
+                name="organization_name"
+                id="organization_name"
+                value={signupData.organization_name}
                 onChange={onSignupChange}
                 className="w-70 px-2 focus:outline-none focus:ring-0"
               />
@@ -372,10 +422,10 @@ export default function AdminAuth({
             </div>
 
             <button
-              className="flex flex-col items-center justify-center font-semibold border rounded-lg w-full h-10 hover:cursor-pointer bg-[linear-gradient(90deg,#255A4F_0%,#2F6F62_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(47,111,98,0.5)] hover:brightness-110"
+              className="flex gap-6 items-center justify-center font-semibold border rounded-lg w-full h-10 hover:cursor-pointer bg-[linear-gradient(90deg,#255A4F_0%,#2F6F62_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(47,111,98,0.5)] hover:brightness-110"
               onClick={onSubmit}
             >
-              Sign Up
+              {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}<span>Sign Up</span>
             </button>
 
             <div className="flex justify-center h-9 mb-4 ">

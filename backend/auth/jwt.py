@@ -3,13 +3,13 @@ import os
 from datetime import datetime, timedelta, timezone
 import jwt
 
-load_dotenv(dotenv_path="./backend/.env")
+load_dotenv('./backend/.env')
 jwt_algorithm = os.getenv("JWT_ALGORITHM")
 secret_key = os.getenv("JWT_SECRET_KEY")
 
 def create_jwt(payload: dict):
     to_encode = payload.copy()
-    exp = datetime.now(timezone.utc) + timedelta(minutes=2)
+    exp = datetime.now(timezone.utc) + timedelta(minutes=10)
     to_encode.update({"exp": exp})
 
     encoded_jwt = jwt.encode(to_encode, secret_key, jwt_algorithm)
@@ -29,12 +29,12 @@ def get_u_id(token=Depends(oauth_scheme_user)):
             return u_id
         else:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid JWT Token."
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Session has expired. Login again."
             )
     except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Session has expired or token is invalid.",
+            detail="Session has expired. Login again.",
         )
 
 

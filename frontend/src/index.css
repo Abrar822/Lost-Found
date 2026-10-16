@@ -29,6 +29,7 @@
     min-height: 100%;
     overflow-x: hidden;
     background: var(--bg);
+    position: relative;
   }
 
   #root {

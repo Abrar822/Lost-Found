@@ -1,7 +1,7 @@
 import Search from "../components/Search";
-import UserAuth from "../components/UserAuth";
-
-export default function Dashboard() {
+import { useNavigate } from "react-router-dom";
+export default function Dashboard({isLog, setUserAuth}) {
+  const navigate = useNavigate()
   return (
     <>
       <div className="hero-container w-[630px] text-5xl mt-25 mb-10 mx-auto text-center leading-tight font-bold ">
@@ -40,7 +40,15 @@ export default function Dashboard() {
           <h4 className="text-(--navbar-border) text-base my-1.5 self-center min-h-[50px]">
             Tell us what you lost and where it was lost.
           </h4>
-          <button className="post-lost bg-(--green) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[80%] hover:bg-(--green-hover) font-bold">
+          <button className="post-lost bg-(--green) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[80%] hover:bg-(--green-hover) font-bold" onClick={() => {
+            if(isLog) {
+              navigate('/post/report_lost_items')
+            } else {
+              setUserAuth({
+                state: true, page: 'login'
+              })
+            }
+          }}>
             Post Lost Item
           </button>
         </div>
@@ -51,7 +59,15 @@ export default function Dashboard() {
           <h4 className="text-(--navbar-border) text-base my-1.5 self-center text-center">
             Help the owner by posting the found item details.
           </h4>
-          <button className="post-found bg-(--orange) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[80%] hover:bg-(--orange-hover) font-bold">
+          <button className="post-found bg-(--orange) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[80%] hover:bg-(--orange-hover) font-bold" onClick={() => {
+            if(isLog) {
+              navigate('/post/report_found_items')
+            } else {
+              setUserAuth({
+                state: true, page: 'login'
+              })
+            }
+          }}>
             Post Found Item
           </button>
         </div>

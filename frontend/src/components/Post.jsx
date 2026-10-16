@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CloudArrowUpIcon } from "@phosphor-icons/react";
-export default function Post() {
-  const[activePost, setActivePost] = useState("lost");
+import { postLost, postFound } from "../api/PostApi";
+
+export default function Post({ setActivePost, activePost, loading, setLoading, setAlert }) {
 
   const [lostItemDetails, setLostItemDetails] = useState({
     item_name: "",
@@ -22,7 +23,7 @@ export default function Post() {
 
   function onLostChange(event) {
     const { name, value, type, files } = event.target;
-
+    console.log(lostItemDetails.date)
     setLostItemDetails((prev) => ({
       ...prev,
       [name]: type === "file" ? files[0] : value,
@@ -38,24 +39,63 @@ export default function Post() {
     }));
   }
 
-  function onSubmit(event) {
+  async function onSubmit(event) {
     event.preventDefault();
 
-    activePost === "lost"
-      ? setLostItemDetails({
-          item_name: "",
-          description: "",
-          date: "",
-          location: "",
-          image: null,
-        })
-      : setFoundItemDetails({
-          item_name: "",
-          description: "",
-          date: "",
-          location: "",
-          image: null,
-        });
+    if (activePost === "lost") {
+      try {
+        if (lostItemDetails.item_name === '' || lostItemDetails.description === '' || lostItemDetails.date === '' || lostItemDetails.location === '') {
+          setAlert({ msg: 'All the details must be filled other than Image.', state: true })
+          return
+        }
+        setLoading(true)
+        let result = await postLost(lostItemDetails)
+        if (result) {
+          setAlert({ msg: 'Posting lost item Successful.', state: true })
+          setLostItemDetails({
+            item_name: "",
+            description: "",
+            date: "",
+            location: "",
+            image: null,
+          })
+          setLoading(false)
+        }
+      }
+      catch (err) {
+        setAlert({ msg: 'Posting Lost Item Failed. ' + String(err.message), state: true })
+      }
+      finally {
+        setLoading(false)
+      }
+    }
+    else {
+      try {
+        if (foundItemDetails.item_name === '' || foundItemDetails.description === '' || foundItemDetails.date === '' || foundItemDetails.location === '') {
+          setAlert({ msg: 'All the details must be filled other than Image.', state: true })
+          return
+        }
+        setLoading(true)
+        let result = await postFound(foundItemDetails)
+        if (result) {
+          setAlert({ msg: 'Posting found item Successful.', state: true })
+          setFoundItemDetails({
+            item_name: "",
+            description: "",
+            date: "",
+            location: "",
+            image: null,
+          });
+        }
+        setLoading(false)
+      }
+      catch (err) {
+        setAlert({ msg: 'Posting Found Item Failed. ' + String(err.message), state: true })
+      }
+      finally {
+        setLoading(false)
+      }
+    }
   }
   const navigate_post = useNavigate();
 
@@ -70,11 +110,10 @@ export default function Post() {
               navigate_post("/post/report_lost_items");
             }}
             className={`w-1/2 rounded-tl-lg transition-colors font-bold
-                ${
-                  activePost === "lost"
-                    ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
-                    : "bg-(--pure-white) text-(--text-1)"
-                } cursor-pointer`}
+                ${activePost === "lost"
+                ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
+                : "bg-(--pure-white) text-(--text-1)"
+              } cursor-pointer`}
           >
             Post Lost Item
           </button>
@@ -86,11 +125,10 @@ export default function Post() {
               navigate_post("/post/report_found_items");
             }}
             className={`w-1/2 rounded-tr-lg font-bold transition-colors
-                ${
-                  activePost === "found"
-                    ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
-                    : "bg-(--pure-white) text-(--text-1)"
-                } cursor-pointer`}
+                ${activePost === "found"
+                ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
+                : "bg-(--pure-white) text-(--text-1)"
+              } cursor-pointer`}
           >
             Post Found Item
           </button>
@@ -136,7 +174,6 @@ export default function Post() {
                 id="date"
                 value={lostItemDetails.date}
                 onChange={onLostChange}
-                placeholder="dd-mm-yyyy"
                 className="w-full px-2 py-2 focus:outline-none focus:ring-0 border rounded-lg"
               />
             </div>
@@ -184,10 +221,10 @@ export default function Post() {
             </div>
 
             <button
-              className="border rounded-lg w-180 h-10 cursor-pointer bg-[linear-gradient(90deg,#255A4F_0%,#2F6F62_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(47,111,98,0.5)] hover:brightness-110"
+              className="border rounded-lg w-180 h-10 cursor-pointer bg-[linear-gradient(90deg,#255A4F_0%,#2F6F62_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(47,111,98,0.5)] hover:brightness-110 flex justify-center items-center gap-6"
               onClick={onSubmit}
             >
-              Submit
+              {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin "></span>}<span>Submit</span>
             </button>
           </form>
         ) : (
@@ -281,10 +318,10 @@ export default function Post() {
             </div>
 
             <button
-              className="border rounded-lg w-180 h-10 cursor-pointer bg-[linear-gradient(90deg,#A9701E_0%,#C2872E_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(194,135,46,0.5)] hover:brightness-110"
+              className="border rounded-lg w-180 h-10 cursor-pointer bg-[linear-gradient(90deg,#A9701E_0%,#C2872E_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(194,135,46,0.5)] hover:brightness-110 flex justify-center items-center gap-6"
               onClick={onSubmit}
             >
-              Submit
+              {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}<span>Submit</span>
             </button>
           </form>
         )}

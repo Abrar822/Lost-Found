@@ -23,29 +23,40 @@ class Login(BaseModel):
 class PostItem(BaseModel):
     item_name: str
     description: str
-    date: str
+    date: date
 
-    @field_validator("date")
-    @classmethod
-    def validate_found_date(cls, value):
+    # @field_validator("date")
+    # @classmethod
+    # def validate_found_date(cls, value):
 
-        try:
-            parsed_date = datetime.strptime(
-                value, "%m/%d/%Y"
-            ).date()
+    #     try:
+    #         parsed_date = datetime.strptime(
+    #             value, "%d-%m-%Y"
+    #         ).date()
 
-        except ValueError:
-            raise ValueError(
-                "Date must be in MM/DD/YYYY format"
-            )
+    #     except ValueError:
+    #         raise ValueError(
+    #             "Date must be in DD-MM-YYYY format."
+    #         )
 
-        if parsed_date > date.today():
-            raise ValueError(
-                "Found date cannot be in the future"
-            )
+    #     if parsed_date > date.today():
+    #         raise ValueError(
+    #             "Found date cannot be in the future."
+    #         )
 
-        return value
+    #     return value
     
     location: str
-    image: Optional[str] = None
+    image: Optional[str] = ""
     
+class UserDetails(BaseModel):
+    Name: str
+    Phone_Number: str
+    Email: str
+    
+class ItemDetails(BaseModel):
+    item_name: str
+    description: str
+    date: str
+    location: str
+    image: Optional[str] = None

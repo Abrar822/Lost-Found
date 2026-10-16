@@ -7,7 +7,8 @@ import {
   UserIcon,
   PhoneIcon,
   EnvelopeIcon,
-  ElevatorIcon
+  ElevatorIcon,
+  CodeIcon,
 } from "@phosphor-icons/react";
 
 export default function Profile({setUserAuth}) {
@@ -57,13 +58,15 @@ export default function Profile({setUserAuth}) {
 
   return (
     <>
-    {/* Overlay */}
-      <div
-        className="overlay absolute inset-0 bg-black/60 z-1"
-        onClick={() => {
-          setUserAuth({ state: false, page: "" });
-        }}
-      ></div>
+    
+{/* Overlay: closes the edit form when clicked */}
+{edit && (
+  <div
+    className="fixed inset-0 bg-black/60 z-2"
+    onClick={() => setEdit(false)}
+  />
+)}
+
     <div className="min-h-screen  flex justify-center py-10 px-4 mt-15">
       <div className="bg-white w-full max-w-xl rounded-2xl shadow-sm p-8">
         
@@ -182,7 +185,7 @@ export default function Profile({setUserAuth}) {
       </div>
     </div>
 
-    <div className="container2 w-full max-w-sm min-h-100 rounded-xl border border-black z-2 
+    { edit && <div className="container2 w-full max-w-sm min-h-100 rounded-xl border border-black z-2 
     bg-(--pure-white)
     absolute
           left-1/2
@@ -281,9 +284,22 @@ export default function Profile({setUserAuth}) {
                 className="w-70 px-2 focus:outline-none focus:ring-0"
               />
             </div>
+            <div className="flex border rounded-lg px-2 py-1">
+              <CodeIcon size={24} className="text-(--orange)" />
+
+              <input
+                type="text"
+                placeholder="Code"
+                name="code"
+                id="code"
+                value="chahat123"
+                onChange="chahat123"
+                className="w-70 px-2 focus:outline-none focus:ring-0"
+              />
+            </div>
         </form>
       
-    </div>
+    </div>}
   </>
   );
 }

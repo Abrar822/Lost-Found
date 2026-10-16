@@ -7,11 +7,10 @@ import {
   UserIcon,
   PhoneIcon,
   EnvelopeIcon,
-  ElevatorIcon,
   CodeIcon,
 } from "@phosphor-icons/react";
 
-export default function Profile({setUserAuth}) {
+export default function Profile() {
   const [activeTab, setActiveTab] = useState("lost");
   const [edit, setEdit] = useState(false);
 

@@ -85,6 +85,11 @@ export default function UserAuth({
         setAlert({msg: 'All the details must be filled.', state: true})
         return
       }
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.email);
+      if(!isEmailValid) {
+        setAlert({msg: 'Enter a valid email.', state: true})
+        return;
+      }
       try {
         setLoading(true)
         let response = await userLogin(loginData);
@@ -106,6 +111,15 @@ export default function UserAuth({
       if(signupData.email === '' || signupData.password === '' || signupData.c_password === '' || signupData.code === '' || signupData.name === '' || signupData.phone_number === '' || signupData.otp === '') {
         setAlert({msg: 'All the details must be filled.', state: true})
         return;
+      }
+      if(signupData.phone_number.length != 10) {
+        setAlert({msg: 'Enter a valid phone number.', state: true})
+        return;
+      }
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupData.email);
+      if(!isEmailValid) {
+        setAlert({msg: 'Enter a valid email.', state: true})
+        return
       }
       try {
         if(signupData.password !== signupData.c_password) {
@@ -293,7 +307,7 @@ export default function UserAuth({
               <EnvelopeIcon size={24} className="text-(--orange)" />
 
               <input
-                type="text"
+                type="email"
                 placeholder="Email"
                 name="email"
                 id="login-email"
@@ -431,7 +445,7 @@ export default function UserAuth({
               <EnvelopeIcon size={24} className="text-(--orange)" />
 
               <input
-                type="text"
+                type="email"
                 placeholder="Email"
                 name="email"
                 id="signup-email"

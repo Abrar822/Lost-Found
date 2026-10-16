@@ -71,6 +71,11 @@ export default function AdminAuth({
         setAlert({ msg: "All the details must be filled.", state: true });
         return;
       }
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.email);
+      if(!isEmailValid) {
+        setAlert({msg: 'Enter a valid email.', state: true})
+        return;
+      }
       try {
         setLoading(true)
         let response = await adminLogin(loginData);
@@ -96,6 +101,11 @@ export default function AdminAuth({
       signupData.organization_name === '') {
         setAlert({ msg: "All the details must be filled.", state: true });
         return;
+      }
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupData.email);
+      if(!isEmailValid) {
+        setAlert({msg: 'Enter a valid email.', state: true})
+        return
       }
       try {
         if (signupData.password !== signupData.c_password) {

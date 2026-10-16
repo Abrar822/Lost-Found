@@ -10,7 +10,8 @@ import Profile from "./components/Profile";
 import PageNotFound from "./components/PageNotFound";
 import Alert from "./components/Alert";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+// HttpOnly + Secure + SameSite cookie
+// what is it
 function App() {
   const [loading, setLoading] = useState(false);
   const [userAuth, setUserAuth] = useState({
@@ -96,6 +97,10 @@ function App() {
         <Routes>
           <Route
             path={"/dashboard"}
+            element={<Dashboard isLog={isLog} setUserAuth={setUserAuth} />}
+          ></Route>
+          <Route
+            path={"/"}
             element={<Dashboard isLog={isLog} setUserAuth={setUserAuth} />}
           ></Route>
           <Route

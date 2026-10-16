@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import  { useEffect, useState } from "react";
 import { 
   User, 
   CalendarBlank, 
@@ -10,9 +10,30 @@ import {
   CodeIcon,
 } from "@phosphor-icons/react";
 
-export default function Profile() {
+export default function Profile({userData,setUserData}) {
   const [activeTab, setActiveTab] = useState("lost");
   const [edit, setEdit] = useState(false);
+  const [editData,setEditData] = useState({
+    name:"",
+    email:"",
+    phone_number:"",
+    code:""
+  })
+  useEffect(()=>{
+    setEditData({
+      name:userData.name,
+      email:userData.email,
+      phone_number:userData.phone_number,
+      code:userData.code
+    })
+  },[userData])
+
+  const onChangeEditFormData = (event) => {
+    setEditData((prev)=>({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }))
+  }
 
   // Mock data based on the provided image
   const mockLostItems = [
@@ -84,8 +105,8 @@ export default function Profile() {
               <User size={48} weight="fill" />
             </div>
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">Patel XYZ</h2>
-              <p className="text-gray-500 mt-1 text-sm sm:text-base">Patel@gmail.com</p>
+              <h2 className="text-2xl font-semibold text-gray-900">{userData.name}</h2>
+              <p className="text-gray-500 mt-1 text-sm sm:text-base">{userData.email}</p>
             </div>
           </div>
           <button onClick={() => setEdit(true)}   className={`border-2 border-indigo-100 text-[#25201B] font-bold 
@@ -251,8 +272,8 @@ export default function Profile() {
                 placeholder="Name"
                 name="name"
                 id="name"
-                value="chahat"
-                onChange="a"
+                value={editData.name}
+                onChange={onChangeEditFormData}
                 className="w-70 px-2 focus:outline-none focus:ring-0"
               />
             </div>
@@ -264,8 +285,8 @@ export default function Profile() {
                 placeholder="Phone No"
                 name="phone_no"
                 id="phone_no"
-                value="8799546099"
-                onChange="8799546099"
+                value={editData.phone_number}
+                onChange={onChangeEditFormData}
                 maxLength={10}
                 className="w-70 px-2 focus:outline-none focus:ring-0"
               />
@@ -278,8 +299,8 @@ export default function Profile() {
                 placeholder="Email"
                 name="email"
                 id="signup-email"
-                value="chahat1008@gmail.com"
-                onChange="chahat1008@gmail.com"
+                value={editData.email}
+                onChange={onChangeEditFormData}
                 className="w-70 px-2 focus:outline-none focus:ring-0"
               />
             </div>
@@ -291,8 +312,8 @@ export default function Profile() {
                 placeholder="Code"
                 name="code"
                 id="code"
-                value="chahat123"
-                onChange="chahat123"
+                value={editData.code}
+                onChange={onChangeEditFormData}
                 className="w-70 px-2 focus:outline-none focus:ring-0"
               />
             </div>

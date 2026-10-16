@@ -12,15 +12,16 @@ def get_user(conn=Depends(db_connect), user_id: int = Depends(get_u_id)):
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(
-            """SELECT "Name","Phone_Number","Email" FROM "User" WHERE "U_id" = %s""",
+            """SELECT u."Name",u."Phone_Number",u."Email",o."Code" FROM "User" AS u LEFT JOIN "Organization" AS o ON u."O_id" = o."O_id" WHERE u."U_id" = %s""",
             (user_id,),
         )
         result = cursor.fetchone()
+        
         if not result:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
-
+            
         return result
 
     except HTTPException as httpErr:

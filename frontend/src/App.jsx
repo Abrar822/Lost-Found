@@ -13,13 +13,14 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { getUserDetails } from "./api/ProfileApi"
 import { useUserContext } from "./contexts/UserRoleContext";
 import { getOrganizationDetails,getUsers } from "./api/AdminApi";
-
+import ForgotPassword from "./components/ForgotPassword";
 
 // HttpOnly + Secure + SameSite cookie
 // what is it
 function App() {
   const { userRole, setUserRole } = useUserContext()
   const [loading, setLoading] = useState(false);
+  const [forgotPwd, setForgotPwd] = useState({state: false, role: ''});
   const [userAuth, setUserAuth] = useState({
     state: false,
     page: "signup",
@@ -144,36 +145,55 @@ function App() {
     <>
       {alert.state && <Alert msg={alert.msg} />}
       <BrowserRouter>
-        {!adminAuth.state && userAuth.state && (
-          <UserAuth
-            setUserAuth={setUserAuth}
-            userAuth={userAuth}
-            setAdminAuth={setAdminAuth}
-            adminAuth={adminAuth}
-            setAlert={setAlert}
-            alert={alert}
-            loading={loading}
-            setLoading={setLoading}
-            setIsLog={setIsLog}
-            userRole={userRole}
-            setUserRole={setUserRole}
-          />
+        {forgotPwd.state ? (
+          forgotPwd.state && (
+            <ForgotPassword
+              setForgotPwd={setForgotPwd}
+              loading={loading}
+              setLoading={setLoading}
+              setAlert={setAlert}
+              forgotPwd={forgotPwd}
+              setUserAuth={setUserAuth}
+              setAdminAuth={setAdminAuth}
+            />
+          )
+        ) : (
+          <>
+            {!adminAuth.state && userAuth.state && (
+              <UserAuth
+                setUserAuth={setUserAuth}
+                userAuth={userAuth}
+                setAdminAuth={setAdminAuth}
+                adminAuth={adminAuth}
+                setAlert={setAlert}
+                alert={alert}
+                loading={loading}
+                setLoading={setLoading}
+                setIsLog={setIsLog}
+                userRole={userRole}
+                setUserRole={setUserRole}
+                setForgotPwd={setForgotPwd}
+              />
+            )}
+            {adminAuth.state && !userAuth.state && (
+              <AdminAuth
+                setUserAuth={setUserAuth}
+                userAuth={userAuth}
+                setAdminAuth={setAdminAuth}
+                adminAuth={adminAuth}
+                setAlert={setAlert}
+                alert={alert}
+                loading={loading}
+                setLoading={setLoading}
+                setIsLog={setIsLog}
+                userRole={userRole}
+                setUserRole={setUserRole}
+                setForgotPwd={setForgotPwd}
+              />
+            )}
+          </>
         )}
-        {adminAuth.state && !userAuth.state && (
-          <AdminAuth
-            setUserAuth={setUserAuth}
-            userAuth={userAuth}
-            setAdminAuth={setAdminAuth}
-            adminAuth={adminAuth}
-            setAlert={setAlert}
-            alert={alert}
-            loading={loading}
-            setLoading={setLoading}
-            setIsLog={setIsLog}
-            userRole={userRole}
-            setUserRole={setUserRole}
-          />
-        )}
+
         <Navbar
           setUserAuth={setUserAuth}
           isLog={isLog}
@@ -199,7 +219,13 @@ function App() {
                 setAlert={setAlert}
                 setUserAuth={setUserAuth}
               >
-                <Post setActivePost={setActivePost} activePost="lost" loading={loading} setLoading={setLoading} setAlert={setAlert} />
+                <Post
+                  setActivePost={setActivePost}
+                  activePost="lost"
+                  loading={loading}
+                  setLoading={setLoading}
+                  setAlert={setAlert}
+                />
               </ProtectedRoute>
             }
           ></Route>
@@ -211,7 +237,13 @@ function App() {
                 setAlert={setAlert}
                 setUserAuth={setUserAuth}
               >
-                <Post setActivePost={setActivePost} activePost="found" loading={loading} setLoading={setLoading} setAlert={setAlert} />
+                <Post
+                  setActivePost={setActivePost}
+                  activePost="found"
+                  loading={loading}
+                  setLoading={setLoading}
+                  setAlert={setAlert}
+                />
               </ProtectedRoute>
             }
           ></Route>

@@ -21,7 +21,8 @@ export default function AdminAuth({
   setLoading,
   setIsLog,
   userRole,
-  setUserRole
+  setUserRole,
+  setForgotPwd
 }) {
   const [signupData, setSignupData] = useState({
     organization_name: "",
@@ -299,6 +300,10 @@ export default function AdminAuth({
             >
               {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>} <span>Login</span>
             </button>
+
+            {
+              adminAuth.page === 'login' && <button className="forgot-password m-0 p-0 text-[12px] font-bold text-(--green) cursor-pointer" onClick={() => setForgotPwd({state: true, role: 'admin'})}>Forgot Password</button>
+            }
 
             <div className="flex justify-center h-9 mb-4 ">
               <button

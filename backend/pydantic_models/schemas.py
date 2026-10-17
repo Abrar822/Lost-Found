@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, field_validator
 from datetime import date,datetime
-from typing import Optional
+from typing import Optional, Literal
 
 class AdminSignup(BaseModel):
     organization_name: str
@@ -81,3 +81,8 @@ class UpdateOrganization(BaseModel):
     name: str
     code: str
     email: EmailStr
+
+class ResetPassword(BaseModel):
+    email: EmailStr
+    new_password: str
+    role: Literal['user','admin']

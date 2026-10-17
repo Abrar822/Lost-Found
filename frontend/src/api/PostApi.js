@@ -1,8 +1,8 @@
-import getToken from "../helper/getToken"
+import { getUserToken } from "../helper/getToken";
 
 
 export async function postLost(item) {
-    let token = getToken()
+    let token = getUserToken()
     if (!token) {
         throw new Error("JWT token not found. Please log in again.");
     }

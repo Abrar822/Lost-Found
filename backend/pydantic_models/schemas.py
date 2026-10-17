@@ -64,3 +64,20 @@ class ItemDetails(BaseModel):
     
 class GenerateOtp(BaseModel):
     email: EmailStr
+    
+class OrganizationDetails(BaseModel):
+    Name: str
+    Code: str
+    Email: EmailStr
+    Users: int
+    
+class UsersDetails(BaseModel):
+    U_id: int
+    Email: EmailStr
+    Phone_Number: str
+    Name: str
+    
+class UpdateOrganization(BaseModel):
+    name: str
+    code: str
+    email: EmailStr

@@ -281,6 +281,9 @@ def reset_password(details: ResetPassword, conn = Depends(db_connect)):
         UPDATE "Organization" SET "Password" = %s WHERE "Email" = %s
         """
         checkQuery = """SELECT "O_id", "Password" FROM "Organization" WHERE "Email" = %s"""
+    otpQuery = """
+            SELECT "Otp", "Expiry" FROM "OtpDetails" WHERE "Email" = %s
+        """
     cur = None
     try:
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -291,6 +294,25 @@ def reset_password(details: ResetPassword, conn = Depends(db_connect)):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="The Entered Credentials are invalid.",
             )
+
+        cur.execute(otpQuery, (details.email,))
+        res = cur.fetchone()
+        if res:
+            received_otp = res['Otp']
+            expiry = res['Expiry']
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Please Regenerate the OTP.')
+
+        if isinstance(expiry, str):
+            expiry = datetime.fromisoformat(expiry)
+        if datetime.now(timezone.utc) >= expiry:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="OTP expired! Please regenerate OTP",
+            )
+
+        if not verify_password(details.otp, received_otp):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Please Enter correct OTP.')
 
         cur.execute(
             query,

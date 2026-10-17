@@ -6,6 +6,8 @@ import {
 } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 import { updatePassword } from "../api/AuthApi";
+import { generateOtp } from "../api/AuthApi";
+import "../App.css"
 
 export default function ForgotPassword({
   setForgotPwd,
@@ -14,14 +16,16 @@ export default function ForgotPassword({
   setAlert,
   forgotPwd,
   setUserAuth,
-  setAdminAuth
+  setAdminAuth,
 }) {
   const [details, setDetails] = useState({
     email: "",
     new_password: "",
     confirm_password: "",
     role: "",
+    otp: "",
   });
+  const [otpLoading, setOtpLoading] = useState(false)
 
   useEffect(() => {
     setDetails((prev) => ({ ...prev, role: forgotPwd.role }));
@@ -40,7 +44,11 @@ export default function ForgotPassword({
   const resetThePassword = async (e) => {
     try {
       e.preventDefault();
-      if (details.email === "" || details.new_password === "") {
+      if (
+        details.email === "" ||
+        details.new_password === "" ||
+        details.otp === ""
+      ) {
         setAlert({ msg: "All the details must be filled.", state: true });
         return;
       }
@@ -57,6 +65,7 @@ export default function ForgotPassword({
         email: details.email,
         new_password: details.new_password,
         role: details.role,
+        otp: details.otp,
       });
       if (response) {
         setAlert({ msg: response.message, state: true });
@@ -66,17 +75,36 @@ export default function ForgotPassword({
         new_password: "",
         confirm_password: "",
         role: "",
+        otp: "",
       });
-      if(forgotPwd.role === 'user') {
-        setUserAuth({state: true, page: 'login'})
-      } else if(forgotPwd.role === 'admin') {
-        setAdminAuth({state: true, page: 'login'})
+      if (forgotPwd.role === "user") {
+        setUserAuth({ state: true, page: "login" });
+      } else if (forgotPwd.role === "admin") {
+        setAdminAuth({ state: true, page: "login" });
       }
-      setForgotPwd({state: false, role: ''})
+      setForgotPwd({ state: false, role: "" });
     } catch (err) {
       setAlert({ msg: err.message, state: true });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const genOtp = async () => {
+    if (details.email === "") {
+      setAlert({ msg: "Please enter the email.", state: true });
+      return;
+    }
+    try {
+      setOtpLoading(true);
+      let response = await generateOtp(details.email);
+      if (response) {
+        setAlert({ msg: response.message, state: true });
+      }
+    } catch (err) {
+      setAlert({ msg: err.message, state: true });
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -188,9 +216,59 @@ export default function ForgotPassword({
             </button>
           </div>
 
+          <div className="w-full h-8.5 flex flex-row gap-4">
+            <input
+              type="text"
+              placeholder="OTP"
+              name="otp"
+              id="otp"
+              value={details.otp}
+              onChange={insertDetails}
+              className="
+                  min-w-0
+                  flex-1
+                  border
+                  rounded-lg
+                  px-2
+                  py-2
+                  focus:outline-none
+                  focus:ring-0
+                "
+            />
+
+            <button
+              type="button"
+              className={`
+                  group
+                  shrink-0
+                  border
+                  rounded-lg
+                  px-6
+                  hover:cursor-pointer
+                  transition-all
+                  duration-200
+                  hover:bg-(--${forgotPwd.role === "user" ? "orange" : "green"})
+                  hover:text-white
+                  hover:shadow-md
+                  active:scale-95
+                  flex
+                  items-center
+                  justify-center
+                `}
+              onClick={genOtp}
+            >
+              {!otpLoading ? <span>Generate</span> : <span
+  className={`otp-spinner ${
+    forgotPwd.role === "user" ? "user-spinner" : "admin-spinner"
+  }`}
+/>}
+            </button>
+          </div>
+
           {/* Submit Button */}
           <button
             onClick={resetThePassword}
+            name="submit-btn"
             type="submit"
             disabled={loading}
             className={`

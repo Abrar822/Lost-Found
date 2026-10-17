@@ -69,3 +69,4 @@ class ResetPassword(BaseModel):
     email: EmailStr
     new_password: str
     role: Literal['user','admin']
+    otp: str

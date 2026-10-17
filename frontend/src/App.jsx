@@ -10,14 +10,16 @@ import Profile from "./components/Profile";
 import PageNotFound from "./components/PageNotFound";
 import Alert from "./components/Alert";
 import ProtectedRoute from "./components/ProtectedRoute";
-import {getUserDetails} from "./api/ProfileApi"
+import { getUserDetails } from "./api/ProfileApi";
 import { useUserContext } from "./contexts/UserRoleContext";
+import ForgotPassword from "./components/ForgotPassword";
 
 // HttpOnly + Secure + SameSite cookie
 // what is it
 function App() {
-  const {userRole, setUserRole} = useUserContext()
+  const { userRole, setUserRole } = useUserContext();
   const [loading, setLoading] = useState(false);
+  const [forgotPwd, setForgotPwd] = useState({state: false, role: ''});
   const [userAuth, setUserAuth] = useState({
     state: false,
     page: "signup",
@@ -34,8 +36,8 @@ function App() {
     name: "",
     email: "",
     phone_number: "",
-    code: ""
-  })
+    code: "",
+  });
 
   function isTokenValid(token) {
     try {
@@ -69,54 +71,72 @@ function App() {
 
   useEffect(() => {
     const exe = async () => {
-      const data = await getUserDetails()
-        setUserData({
-          name: data.Name,
-          email: data.Email,
-          phone_number: data.Phone_Number,
-          code: data.Code
-        })
-    }
+      const data = await getUserDetails();
+      setUserData({
+        name: data.Name,
+        email: data.Email,
+        phone_number: data.Phone_Number,
+        code: data.Code,
+      });
+    };
     if (isLog) {
-      exe()
+      exe();
     }
-    
-  }, [isLog])
+  }, [isLog]);
 
   return (
     <>
       {alert.state && <Alert msg={alert.msg} />}
       <BrowserRouter>
-        {!adminAuth.state && userAuth.state && (
-          <UserAuth
-            setUserAuth={setUserAuth}
-            userAuth={userAuth}
-            setAdminAuth={setAdminAuth}
-            adminAuth={adminAuth}
-            setAlert={setAlert}
-            alert={alert}
-            loading={loading}
-            setLoading={setLoading}
-            setIsLog={setIsLog}
-            userRole={userRole}
-            setUserRole={setUserRole}
-          />
+        {forgotPwd.state ? (
+          forgotPwd.state && (
+            <ForgotPassword
+              setForgotPwd={setForgotPwd}
+              loading={loading}
+              setLoading={setLoading}
+              setAlert={setAlert}
+              forgotPwd={forgotPwd}
+              setUserAuth={setUserAuth}
+              setAdminAuth={setAdminAuth}
+            />
+          )
+        ) : (
+          <>
+            {!adminAuth.state && userAuth.state && (
+              <UserAuth
+                setUserAuth={setUserAuth}
+                userAuth={userAuth}
+                setAdminAuth={setAdminAuth}
+                adminAuth={adminAuth}
+                setAlert={setAlert}
+                alert={alert}
+                loading={loading}
+                setLoading={setLoading}
+                setIsLog={setIsLog}
+                userRole={userRole}
+                setUserRole={setUserRole}
+                setForgotPwd={setForgotPwd}
+              />
+            )}
+            {adminAuth.state && !userAuth.state && (
+              <AdminAuth
+                setUserAuth={setUserAuth}
+                userAuth={userAuth}
+                setAdminAuth={setAdminAuth}
+                adminAuth={adminAuth}
+                setAlert={setAlert}
+                alert={alert}
+                loading={loading}
+                setLoading={setLoading}
+                setIsLog={setIsLog}
+                userRole={userRole}
+                setUserRole={setUserRole}
+                setForgotPwd={setForgotPwd}
+              />
+            )}
+          </>
         )}
-        {adminAuth.state && !userAuth.state && (
-          <AdminAuth
-            setUserAuth={setUserAuth}
-            userAuth={userAuth}
-            setAdminAuth={setAdminAuth}
-            adminAuth={adminAuth}
-            setAlert={setAlert}
-            alert={alert}
-            loading={loading}
-            setLoading={setLoading}
-            setIsLog={setIsLog}
-            userRole={userRole}
-            setUserRole={setUserRole}
-          />
-        )}
+
         <Navbar
           setUserAuth={setUserAuth}
           isLog={isLog}
@@ -142,7 +162,13 @@ function App() {
                 setAlert={setAlert}
                 setUserAuth={setUserAuth}
               >
-                <Post setActivePost={setActivePost} activePost="lost" loading={loading} setLoading={setLoading} setAlert={setAlert} />
+                <Post
+                  setActivePost={setActivePost}
+                  activePost="lost"
+                  loading={loading}
+                  setLoading={setLoading}
+                  setAlert={setAlert}
+                />
               </ProtectedRoute>
             }
           ></Route>
@@ -154,7 +180,13 @@ function App() {
                 setAlert={setAlert}
                 setUserAuth={setUserAuth}
               >
-                <Post setActivePost={setActivePost} activePost="found" loading={loading} setLoading={setLoading} setAlert={setAlert} />
+                <Post
+                  setActivePost={setActivePost}
+                  activePost="found"
+                  loading={loading}
+                  setLoading={setLoading}
+                  setAlert={setAlert}
+                />
               </ProtectedRoute>
             }
           ></Route>
@@ -166,7 +198,7 @@ function App() {
                 setAlert={setAlert}
                 setUserAuth={setUserAuth}
               >
-                <Profile userData={userData} setUserData={setUserData}/>
+                <Profile userData={userData} setUserData={setUserData} />
               </ProtectedRoute>
             }
           ></Route>

@@ -23,7 +23,8 @@ export default function UserAuth({
   setLoading,
   setIsLog,
   userRole,
-  setUserRole
+  setUserRole,
+  setForgotPwd
 }) {
   const [signupData, setSignupData] = useState({
     name: "",
@@ -376,6 +377,10 @@ export default function UserAuth({
             >
               {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}<span>Login</span>
             </button>
+
+            {
+              userAuth.page === 'login' && <button className="forgot-password m-0 p-0 text-[12px] font-bold text-(--orange) cursor-pointer" onClick={() => setForgotPwd({state: true, role: 'user'})}>Forgot Password</button>
+            }
 
             {/* Admin Login */}
             <div className="flex justify-center h-9 mb-4">

@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-from ..pydantic_models.schemas import AdminSignup, UserSignup, Login, GenerateOtp
+from ..pydantic_models.schemas import (
+    AdminSignup,
+    UserSignup,
+    Login,
+    GenerateOtp,
+    ResetPassword,
+)
 from ..db_operations.db_connect import db_connect
 from psycopg2.extras import RealDictCursor
 from .security import hash_password, verify_password
 from .jwt import create_jwt
 import secrets
-from datetime import datetime,timezone,timedelta
+from datetime import datetime, timezone, timedelta
 from email.message import EmailMessage
 from dotenv import load_dotenv
 import os
@@ -15,31 +21,27 @@ import smtplib
 
 db_endpoints = APIRouter()
 
-def send_otp(email:str,otp:str):
-    smtp_email = os.getenv('SMTP_EMAIL')
-    smtp_password = os.getenv('SMTP_EMAIL_PASSWORD')
+
+def send_otp(email: str, otp: str):
+    smtp_email = os.getenv("SMTP_EMAIL")
+    smtp_password = os.getenv("SMTP_EMAIL_PASSWORD")
     if not smtp_email or not smtp_password:
-        raise RuntimeError(
-            "SMTP_EMAIL or SMTP_EMAIL_PASSWORD is missing from .env"
-        )
+        raise RuntimeError("SMTP_EMAIL or SMTP_EMAIL_PASSWORD is missing from .env")
     msg = EmailMessage()
     msg["Subject"] = "Your Lost&Found Signup OTP"
     # msg["From"] = os.getenv('SMTP_EMAIL')
     msg["From"] = smtp_email
     msg["To"] = email
-    
-    msg.set_content(
-        f"Your OTP is {otp}. It expires in 5 minutes."
-    )
-    with smtplib.SMTP("smtp.gmail.com",587,timeout=30) as smtp:
+
+    msg.set_content(f"Your OTP is {otp}. It expires in 5 minutes.")
+    with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as smtp:
         smtp.ehlo()
         smtp.starttls()
         smtp.ehlo()
-        smtp.login(
-            smtp_email,smtp_password
-        )
+        smtp.login(smtp_email, smtp_password)
         smtp.send_message(msg)
-    
+
+
 @db_endpoints.post("/admin_signup", status_code=status.HTTP_201_CREATED)
 def admin_signup(admin: AdminSignup, conn=Depends(db_connect)):
     tupl = (
@@ -78,8 +80,9 @@ def admin_signup(admin: AdminSignup, conn=Depends(db_connect)):
         if cur:
             cur.close()
 
-@db_endpoints.post('/generate_otp',status_code=status.HTTP_201_CREATED)
-def generate_otp(data:GenerateOtp, conn=Depends(db_connect)):
+
+@db_endpoints.post("/generate_otp", status_code=status.HTTP_201_CREATED)
+def generate_otp(data: GenerateOtp, conn=Depends(db_connect)):
     cur = None
     try:
         email = data.email
@@ -88,9 +91,9 @@ def generate_otp(data:GenerateOtp, conn=Depends(db_connect)):
         expiry = datetime.now(timezone.utc) + timedelta(minutes=5)
         query = """INSERT INTO "OtpDetails" ("Email","Otp","Expiry") VALUES (%s,%s,%s) ON CONFLICT ("Email") DO UPDATE SET "Otp" = EXCLUDED."Otp", "Expiry" = EXCLUDED."Expiry" """
         cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute(query,(email,hashed_otp,expiry))
+        cur.execute(query, (email, hashed_otp, expiry))
         conn.commit()
-        send_otp(email,str(otp))
+        send_otp(email, str(otp))
         return {
             "message": "OTP sent successfully to your email.",
             "expires_in": 300,
@@ -106,7 +109,8 @@ def generate_otp(data:GenerateOtp, conn=Depends(db_connect)):
     finally:
         if cur:
             cur.close()
-        
+
+
 @db_endpoints.post("/user_signup", status_code=status.HTTP_201_CREATED)
 def user_signup(user: UserSignup, conn=Depends(db_connect)):
     cur = None
@@ -134,28 +138,38 @@ def user_signup(user: UserSignup, conn=Depends(db_connect)):
                 status_code=status.HTTP_409_CONFLICT, detail=f"The user already exists."
             )
 
-        #Verify OTP
+        # Verify OTP
         query = """SELECT "Otp","Expiry" FROM "OtpDetails" WHERE "Email" = %s;"""
         cur.execute(query, (user.email,))
         result = cur.fetchone()
         if result:
-            hashed_otp = result['Otp']
-            expiry = result['Expiry']
+            hashed_otp = result["Otp"]
+            expiry = result["Expiry"]
         else:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Please regenerate the OTP"
+                detail="Please regenerate the OTP",
             )
         if isinstance(expiry, str):
             expiry = datetime.fromisoformat(expiry)
         if datetime.now(timezone.utc) >= expiry:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail="OTP expired! Please regenerate OTP")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="OTP expired! Please regenerate OTP",
+            )
         if not verify_password(user.otp, hashed_otp):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail="Please enter correct OTP")
-        
-        tupl = (o_id, user.email, user.phone_number, hash_password(user.password), user.name)
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Please enter correct OTP",
+            )
+
+        tupl = (
+            o_id,
+            user.email,
+            user.phone_number,
+            hash_password(user.password),
+            user.name,
+        )
         query = """INSERT INTO "User" ("O_id", "Email", "Phone_Number", "Password", "Name") 
             VALUES (%s, %s, %s, %s, %s);"""
         cur.execute(query, tupl)
@@ -177,7 +191,7 @@ def user_signup(user: UserSignup, conn=Depends(db_connect)):
 
 @db_endpoints.post("/admin_login", status_code=status.HTTP_200_OK)
 def admin_login(admin: Login, conn=Depends(db_connect)):
-    
+
     cur = None
     try:
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -253,3 +267,70 @@ def user_login(user: Login, conn=Depends(db_connect)):
     finally:
         if cur:
             cur.close()
+
+
+@db_endpoints.post("/user_login/reset_password", status_code=status.HTTP_201_CREATED)
+def reset_password(details: ResetPassword, conn = Depends(db_connect)):
+    if details.role == "user":
+        query = """
+        UPDATE "User" SET "Password" = %s WHERE "Email" = %s
+        """
+        checkQuery = """SELECT "U_id", "Password" FROM "User" WHERE "Email" = %s"""
+    elif details.role == "admin":
+        query = """
+        UPDATE "Organization" SET "Password" = %s WHERE "Email" = %s
+        """
+        checkQuery = """SELECT "O_id", "Password" FROM "Organization" WHERE "Email" = %s"""
+    otpQuery = """
+            SELECT "Otp", "Expiry" FROM "OtpDetails" WHERE "Email" = %s
+        """
+    cur = None
+    try:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute(checkQuery, (details.email,))
+        res = cur.fetchone()
+        if not res:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="The Entered Credentials are invalid.",
+            )
+
+        cur.execute(otpQuery, (details.email,))
+        res = cur.fetchone()
+        if res:
+            received_otp = res['Otp']
+            expiry = res['Expiry']
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Please Regenerate the OTP.')
+
+        if isinstance(expiry, str):
+            expiry = datetime.fromisoformat(expiry)
+        if datetime.now(timezone.utc) >= expiry:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="OTP expired! Please regenerate OTP",
+            )
+
+        if not verify_password(details.otp, received_otp):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Please Enter correct OTP.')
+
+        cur.execute(
+            query,
+            (
+                hash_password(details.new_password),
+                details.email,
+            ),
+        )
+        conn.commit()
+        return {"message": "Password changed successfully."}
+    except HTTPException as httpErr:
+        if conn: conn.rollback()
+        raise httpErr
+    except:
+        if conn: conn.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Some Error Occurred. Please try again.",
+        )
+    finally:
+        cur.close()

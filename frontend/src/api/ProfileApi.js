@@ -1,7 +1,7 @@
-import getToken from "../helper/getToken"
+import { getUserToken } from "../helper/getToken";
 
 export function getUserDetails() {
-    const token = getToken()
+    const token = getUserToken()
     if (!token) {
         throw new Error("JWT token not found. Please log in again.");
     }

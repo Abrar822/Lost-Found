@@ -1,7 +1,11 @@
 import Search from "../components/Search";
 import { useNavigate } from "react-router-dom";
-export default function Dashboard({isLog, setUserAuth}) {
+import AdminDashboard from "./AdminDashboard";
+export default function Dashboard({isLog, setUserAuth, userRole, organization, setOrganization, users, setUsers, setAlert, loading, setLoading}) {
   const navigate = useNavigate()
+  if (isLog && userRole === "admin") {
+    return <AdminDashboard organization={organization} setOrganization={setOrganization} users={users} setUsers={setUsers} setAlert={setAlert} loading={loading} setLoading={setLoading} />;
+  }
   return (
     <>
       <div className="hero-container w-[630px] text-5xl mt-25 mb-10 mx-auto text-center leading-tight font-bold ">

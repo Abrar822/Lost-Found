@@ -1,0 +1,26 @@
+.otp-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.user-spinner {
+  border-top-color: var(--orange);
+}
+
+.admin-spinner {
+  border-top-color: var(--green);
+}
+
+button.group:hover .user-spinner,
+button.group:hover .admin-spinner {
+  border-top-color: white;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

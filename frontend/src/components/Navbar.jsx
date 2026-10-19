@@ -20,7 +20,7 @@ export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRol
 
   return (
     <>
-      <div className="bg-(--navbar)/90 text-(--text-1) nav-container max-w-full w-full h-[70px] fixed z-2 top-0 border-b-1 border-(--border-1)/20">
+      <div className="bg-(--navbar)/90 text-(--text-1) nav-container max-w-full w-full h-[70px] fixed z-3 top-0 border-b-1 border-(--border-1)/20">
         <nav className="nav max-w-[1600px] h-full p-2 px-4 mx-auto flex justify-between items-center">
           <div className="logo tracking-wider text-3xl font-bold">
             Lost<span className="text-(--orange)">&</span>Found
@@ -64,7 +64,7 @@ export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRol
                 </button>
               </li>
             )}
-            {isLog && (
+            {userRole === 'user' && isLog && (
               <li
                 className={`h-[40px] text-(--text-1) font-bold rounded-lg flex justify-center items-center transition-all duration-150 ease-in-out active:scale-90`}
                 onClick={() => {

@@ -7,7 +7,7 @@ from ..auth.jwt import get_u_id
 profile_endpoints = APIRouter()
 
 
-@profile_endpoints.get("/user", response_model=UserDetails)
+@profile_endpoints.get("/user", response_model=UserDetails,status_code=status.HTTP_200_OK)
 def get_user(conn=Depends(db_connect), user_id: int = Depends(get_u_id)):
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)

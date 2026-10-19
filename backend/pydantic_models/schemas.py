@@ -54,6 +54,12 @@ class UserDetails(BaseModel):
     Phone_Number: str
     Email: str
     Code: str
+
+class UpdateUser(BaseModel):
+    Name: str
+    Phone_Number: str
+    Email: str
+    Code: str 
     
 class ItemDetails(BaseModel):
     item_name: str

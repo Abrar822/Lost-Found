@@ -9,7 +9,7 @@ secret_key = os.getenv("JWT_SECRET_KEY")
 
 def create_jwt(payload: dict):
     to_encode = payload.copy()
-    exp = datetime.now(timezone.utc) + timedelta(minutes=30)
+    exp = datetime.now(timezone.utc) + timedelta(minutes=1440)
     to_encode.update({"exp": exp})
 
     encoded_jwt = jwt.encode(to_encode, secret_key, jwt_algorithm)

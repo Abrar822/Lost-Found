@@ -9,24 +9,52 @@ import {
   EnvelopeIcon,
   CodeIcon,
 } from "@phosphor-icons/react";
+import {
+  getUserDetails,
+  updateUserDetails,
+} from "../api/profile";
 
 export default function Profile({userData,setUserData}) {
   const [activeTab, setActiveTab] = useState("lost");
   const [edit, setEdit] = useState(false);
+  const [error, setError] = useState("");
   const [editData,setEditData] = useState({
     name:"",
     email:"",
     phone_number:"",
     code:""
   })
-  useEffect(()=>{
-    setEditData({
-      name:userData.name,
-      email:userData.email,
-      phone_number:userData.phone_number,
-      code:userData.code
-    })
-  },[userData])
+  // useEffect(()=>{
+  //   setEditData({
+  //     name:userData.name,
+  //     email:userData.email,
+  //     phone_number:userData.phone_number,
+  //     code:userData.code
+  //   })
+  // },[userData])
+  
+useEffect(() => {
+  const loadProfile = async () => {
+    try {
+      const data = await getUserDetails();
+
+      const user = {
+        name: data.Name,
+        email: data.Email,
+        phone_number: data.Phone_Number,
+        code: data.Code ?? "",
+      };
+
+      setUserData(user);
+      setEditData(user);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  loadProfile();
+}, [setUserData]);
+
 
   const onChangeEditFormData = (event) => {
     setEditData((prev)=>({
@@ -304,7 +332,7 @@ export default function Profile({userData,setUserData}) {
                 className="w-70 px-2 focus:outline-none focus:ring-0"
               />
             </div>
-            <div className="flex border rounded-lg px-2 py-1">
+            <div className="flex border rounded-lg px-2 py-1 w-85">
               <CodeIcon size={24} className="text-(--orange)" />
 
               <input
@@ -314,7 +342,30 @@ export default function Profile({userData,setUserData}) {
                 id="code"
                 value={editData.code}
                 onChange={onChangeEditFormData}
-                className="w-70 px-2 focus:outline-none focus:ring-0"
+                className="w-65 px-2 focus:outline-none focus:ring-0"
+              />
+            </div>
+            <div className="flex justify-center w-85 pt-1">
+              <input 
+              type="submit" 
+              name="submit"
+              id="submit"
+              className="flex
+                items-center
+                justify-center
+                font-semibold
+                border
+                rounded-lg
+                w-30
+                h-10
+                hover:cursor-pointer
+                bg-[linear-gradient(90deg,#A9701E_0%,#C2872E_100%)]
+                text-white
+                transition-all
+                duration-300
+                hover:shadow-[0_0_20px_rgba(194,135,46,0.5)]
+                hover:brightness-110"
+              
               />
             </div>
         </form>

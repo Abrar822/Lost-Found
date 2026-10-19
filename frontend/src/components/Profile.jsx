@@ -1,8 +1,9 @@
-import  { useEffect, useState } from "react";
-import { 
-  User, 
-  CalendarBlank, 
-  MapPin, 
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  User,
+  CalendarBlank,
+  MapPin,
   CaretRight,
   UserIcon,
   PhoneIcon,
@@ -12,18 +13,26 @@ import {
 import {
   getUserDetails,
   updateUserDetails,
-} from "../api/profile";
+  getLostItems,
+  getFoundItems,
+} from "../api/ProfileApi";
 
-export default function Profile({userData,setUserData}) {
+export default function Profile({ userData, setUserData }) {
+  const navigate = useNavigate();
+  const [lostItems, setLostItems] = useState([]);
+  const [foundItems, setFoundItems] = useState([]);
+  const [itemsLoading, setItemsLoading] = useState(true);
+  const [itemsError, setItemsError] = useState("");
   const [activeTab, setActiveTab] = useState("lost");
   const [edit, setEdit] = useState(false);
   const [error, setError] = useState("");
-  const [editData,setEditData] = useState({
-    name:"",
-    email:"",
-    phone_number:"",
-    code:""
-  })
+  const [saving, setSaving] = useState(false);
+  const [editData, setEditData] = useState({
+    name: "",
+    email: "",
+    phone_number: "",
+    code: "",
+  });
   // useEffect(()=>{
   //   setEditData({
   //     name:userData.name,
@@ -32,267 +41,337 @@ export default function Profile({userData,setUserData}) {
   //     code:userData.code
   //   })
   // },[userData])
-  
-useEffect(() => {
-  const loadProfile = async () => {
-    try {
-      const data = await getUserDetails();
 
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const data = await getUserDetails();
+
+        const user = {
+          name: data.Name,
+          email: data.Email,
+          phone_number: data.Phone_Number,
+          code: data.Code ?? "",
+        };
+
+        setUserData(user);
+        setEditData(user);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    loadProfile();
+  }, [setUserData]);
+
+  const handleUpdateProfile = async (event) => {
+    event.preventDefault();
+
+    setError("");
+    setSaving(true);
+
+    try {
+      const updatedUser = await updateUserDetails(editData);
+
+      // Update the displayed profile using the API response.
       const user = {
-        name: data.Name,
-        email: data.Email,
-        phone_number: data.Phone_Number,
-        code: data.Code ?? "",
+        name: updatedUser.Name ?? editData.name,
+        email: updatedUser.Email ?? editData.email,
+        phone_number: updatedUser.Phone_Number ?? editData.phone_number,
+        code: updatedUser.Code ?? editData.code,
       };
 
       setUserData(user);
       setEditData(user);
+      setEdit(false);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to update profile.");
+    } finally {
+      setSaving(false);
     }
   };
 
-  loadProfile();
-}, [setUserData]);
-
-
   const onChangeEditFormData = (event) => {
-    setEditData((prev)=>({
+    setEditData((prev) => ({
       ...prev,
       [event.target.name]: event.target.value,
-    }))
-  }
+    }));
+  };
 
-  // Mock data based on the provided image
-  const mockLostItems = [
-    {
-      id: 1,
-      title: "Black Backpack",
-      type: "Lost",
-      date: "12 Sep 2025",
-      location: "SCET Campus",
-      image: "https://via.placeholder.com/150/333333/FFFFFF?text=Backpack" 
-    },
-    {
-      id: 2,
-      title: "iPhone 13",
-      type: "Lost",
-      date: "10 Sep 2025",
-      location: "Library, SCET",
-      image: "https://via.placeholder.com/150/000000/FFFFFF?text=Phone"
-    },
-    {
-      id: 3,
-      title: "Wallet",
-      type: "Lost",
-      date: "07 Sep 2025",
-      location: "Canteen, SCET",
-      image: "https://via.placeholder.com/150/5C4033/FFFFFF?text=Wallet"
-    }
-  ];
+  useEffect(() => {
+    const loadItems = async () => {
+      setItemsLoading(true);
+      setItemsError("");
 
-  const mockFoundItems = [
-    {
-      id: 4,
-      title: "Water Bottle",
-      type: "Found",
-      date: "14 Sep 2025",
-      location: "Room 204, SCET",
-      image: "https://via.placeholder.com/150/0000FF/FFFFFF?text=Bottle"
-    }
-  ];
+      try {
+        const lost = await getLostItems();
+        console.log("Lost items API response:", lost);
+        setLostItems(Array.isArray(lost) ? lost : []);
+      } catch (err) {
+        console.error("Lost items API error:", err);
+        setItemsError(
+          (prev) => `${prev}${prev ? "\n" : ""}Lost items: ${err.message}`,
+        );
+      }
 
-  const currentItems = activeTab === "lost" ? mockLostItems : mockFoundItems;
+      try {
+        const found = await getFoundItems();
+        console.log("Found items API response:", found);
+        setFoundItems(Array.isArray(found) ? found : []);
+      } catch (err) {
+        console.error("Found items API error:", err);
+        setItemsError(
+          (prev) => `${prev}${prev ? "\n" : ""}Found items: ${err.message}`,
+        );
+      }
+
+      setItemsLoading(false);
+    };
+
+    loadItems();
+  }, []);
+
+  const currentItems = activeTab === "lost" ? lostItems : foundItems;
+  console.log("Lost items:", lostItems);
+  console.log("Found items:", foundItems);
 
   return (
     <>
-    
-{/* Overlay: closes the edit form when clicked */}
-{edit && (
-  <div
-    className="fixed inset-0 bg-black/60 z-2"
-    onClick={() => setEdit(false)}
-  />
-)}
+      {/* Overlay: closes the edit form when clicked */}
 
-    <div className="min-h-screen  flex justify-center py-10 px-4 mt-15">
-      <div className="bg-white w-full max-w-xl rounded-2xl shadow-sm p-8">
-        
-        {/* Header */}
-        <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Profile</h1>
+      {edit && (
+        <div
+          className="fixed inset-0 bg-black/60 z-2"
+          onClick={() => {
+            setEditData({ ...userData });
+            setEdit(false);
+          }}
+        />
+      )}
 
-        {/* User Info Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
-          <div className="flex items-center gap-6">
-            <div onClick={() => setActiveTab("lost")} className={`w-24 h-24 rounded-full 
+      <div className="min-h-screen  flex justify-center py-10 px-4 mt-15">
+        <div className="bg-white w-full max-w-xl rounded-2xl shadow-sm p-8">
+          {/* Header */}
+          <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Profile</h1>
+
+          {/* User Info Section */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
+            <div className="flex items-center gap-6">
+              <div
+                onClick={() => setActiveTab("lost")}
+                className={`w-24 h-24 rounded-full 
             flex items-center justify-center text-white shadow-md ${
-            activeTab === "lost"
-            ? "bg-(--green)"
-            : "bg-[#B47B27]"
-            }`}>
-              <User size={48} weight="fill" />
+              activeTab === "lost" ? "bg-(--green)" : "bg-[#B47B27]"
+            }`}
+              >
+                <User size={48} weight="fill" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  {userData.name}
+                </h2>
+                <p className="text-gray-500 mt-1 text-sm sm:text-base">
+                  {userData.email}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900">{userData.name}</h2>
-              <p className="text-gray-500 mt-1 text-sm sm:text-base">{userData.email}</p>
-            </div>
-          </div>
-          <button onClick={() => setEdit(true)}   className={`border-2 border-indigo-100 text-[#25201B] font-bold 
+            <button
+              onClick={() => setEdit(true)}
+              className={`border-2 border-indigo-100 text-[#25201B] font-bold 
           px-6 py-2 rounded-lg transition-colors duration-200 bg-[#FAF7F0] cursor-pointer
           ${
             activeTab === "found"
-            ? "hover:bg-[#B47B27] hover:text-(--pure-white)"
-            : "hover:bg-(--green) hover:text-(--pure-white)"
-            }`}>
-            Edit Profile
-          </button>
-        </div>
-
-        {/* My Posts Section */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-6">My Posts</h2>
-          
-          {/* Tabs */}
-          <div className="flex border-b border-gray-200 mb-6">
-            <button
-              onClick={() => setActiveTab("lost")}
-              className={`flex-1 pb-3 pt-2 text-center text-sm sm:text-base rounded-tl-lg font-bold transition-colors ${
-                activeTab === "lost" 
-                  ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)" 
-                  : "text-gray-400 hover:text-gray-600"
-              }`}
+              ? "hover:bg-[#B47B27] hover:text-(--pure-white)"
+              : "hover:bg-(--green) hover:text-(--pure-white)"
+          }`}
             >
-              Lost Items
-            </button>
-            <button
-              onClick={() => setActiveTab("found")}
-              className={`flex-1 pb-1 text-center text-sm sm:text-base rounded-tr-lg font-bold transition-colors ${
-                activeTab === "found" 
-                  ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)" 
-                  : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              Found Items
+              Edit Profile
             </button>
           </div>
 
-          {/* Items List */}
-          <div className="flex flex-col gap-2">
-            {currentItems.length > 0 ? (
-              currentItems.map((item) => (
-                <div 
-                  key={item.id} 
-                  className="flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-4 sm:gap-6">
-                    {/* Item Image */}
-                    <img 
-                      src={item.image} 
-                      alt={item.title} 
-                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-gray-100 shadow-sm"
-                    />
-                    
-                    {/* Item Details */}
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-gray-900 text-base sm:text-lg">{item.title}</h3>
-                        <span className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md ${
-                          item.type === 'Lost' 
-                            ? 'bg-red-100 text-red-500' 
-                            : 'bg-green-100 text-green-600'
-                        }`}>
-                          {item.type}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 text-gray-400 text-xs sm:text-sm mt-1">
-                        <CalendarBlank size={16} weight="regular" />
-                        <span>{item.date}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 text-gray-400 text-xs sm:text-sm">
-                        <MapPin size={16} weight="regular" />
-                        <span>{item.location}</span>
+          {/* My Posts Section */}
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">My Posts</h2>
+
+            {/* Tabs */}
+            <div className="flex border-b border-gray-200 mb-6">
+              <button
+                onClick={() => setActiveTab("lost")}
+                className={`flex-1 pb-3 pt-2 text-center text-sm sm:text-base rounded-tl-lg font-bold transition-colors ${
+                  activeTab === "lost"
+                    ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                Lost Items
+              </button>
+              <button
+                onClick={() => setActiveTab("found")}
+                className={`flex-1 pb-1 text-center text-sm sm:text-base rounded-tr-lg font-bold transition-colors ${
+                  activeTab === "found"
+                    ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
+                    : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                Found Items
+              </button>
+            </div>
+
+            {/* Items List */}
+            <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto overflow-x-hidden pr-2">
+              {itemsLoading ? (
+                <div className="text-center py-10 text-gray-400">
+                  Loading {activeTab} items...
+                </div>
+              ) : itemsError ? (
+                <div className="text-center py-10 text-red-500">
+                  {itemsError}
+                </div>
+              ) : currentItems.length > 0 ? (
+                currentItems.map((item) => (
+                  <div
+                    key={`${item.type}-${item.id}`}
+                    onClick={() =>
+                      navigate("/item-details", {
+                        state: { item },
+                      })
+                    }
+                    className="flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-4 sm:gap-6">
+                      {/* Item Image */}
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-gray-100 shadow-sm"
+                      />
+
+                      {/* Item Details */}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-semibold text-gray-900 text-base sm:text-lg">
+                            {item.title}
+                          </h3>
+                          <span
+                            className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md ${
+                              item.type === "Lost"
+                                ? "bg-red-100 text-red-500"
+                                : "bg-green-100 text-green-600"
+                            }`}
+                          >
+                            {item.type}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-gray-400 text-xs sm:text-sm mt-1">
+                          <CalendarBlank size={16} weight="regular" />
+                          <span>
+                            {item.date
+                              ? new Date(
+                                  `${item.date}T00:00:00`,
+                                ).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })
+                              : "Date unavailable"}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-gray-400 text-xs sm:text-sm">
+                          <MapPin size={16} weight="regular" />
+                          <span>{item.location}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Right Arrow */}
-                  <div className="text-gray-400 group-hover:text-gray-700 transition-colors pr-2">
-                    <CaretRight size={24} />
+                    {/* Right Arrow */}
+                    <div className="text-gray-400 group-hover:text-gray-700 transition-colors pr-2">
+                      <CaretRight size={24} />
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-10 text-gray-400">
+                  No {activeTab} items posted yet.
                 </div>
-              ))
-            ) : (
-              <div className="text-center py-10 text-gray-400">
-                No {activeTab} items posted yet.
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    { edit && <div className="container2 w-full max-w-sm min-h-100 rounded-xl border border-black z-2 
+      {edit && (
+        <div
+          className="container2 w-full max-w-sm min-h-100 rounded-xl border border-black z-2 
     bg-(--pure-white)
     absolute
           left-1/2
           top-1/2
           -translate-x-1/2
-          -translate-y-1/2">
-            {/* User Icon */}
-        <div className="flex justify-center m-5">
-          <div className="">
-            <svg
-            width="100"
-            height="100"
-            viewBox="0 0 200 200"
-            xmlns="http://www.w3.org/2000/svg"
-            className="rounded-full"
-          >
-            <defs>
-              {/* Orange Gradient */}
-              <linearGradient
-                id="orangeGradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
+          -translate-y-1/2"
+        >
+          {/* User Icon */}
+          <div className="flex justify-center m-5">
+            <div className="">
+              <svg
+                width="100"
+                height="100"
+                viewBox="0 0 200 200"
+                xmlns="http://www.w3.org/2000/svg"
+                className="rounded-full"
               >
-                <stop offset="0%" stopColor="#C2872E" />
-                <stop offset="50%" stopColor="#B47B27" />
-                <stop offset="100%" stopColor="#A9701E" />
-              </linearGradient>
-            </defs>
+                <defs>
+                  {/* Orange Gradient */}
+                  <linearGradient
+                    id="orangeGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="#C2872E" />
+                    <stop offset="50%" stopColor="#B47B27" />
+                    <stop offset="100%" stopColor="#A9701E" />
+                  </linearGradient>
+                </defs>
 
-            {/* Background Circle */}
-            <circle cx="100" cy="100" r="98" fill="url(#orangeGradient)" />
+                {/* Background Circle */}
+                <circle cx="100" cy="100" r="98" fill="url(#orangeGradient)" />
 
-            {/* User Head */}
-            <circle cx="100" cy="80" r="28" fill="#FFFFFF" fillOpacity="0.9" />
+                {/* User Head */}
+                <circle
+                  cx="100"
+                  cy="80"
+                  r="28"
+                  fill="#FFFFFF"
+                  fillOpacity="0.9"
+                />
 
-            {/* User Body */}
-            <path
-              d="
+                {/* User Body */}
+                <path
+                  d="
                 M 50 165
                 C 50 125 72 108 100 108
                 C 128 108 150 125 150 165
                 Z
               "
-              fill="#FFFFFF"
-              fillOpacity="0.9"
-            />
+                  fill="#FFFFFF"
+                  fillOpacity="0.9"
+                />
 
-            {/* Circle Clip */}
-            <clipPath id="orangeCircleClip">
-              <circle cx="100" cy="100" r="98" />
-            </clipPath>
-          </svg>
-
+                {/* Circle Clip */}
+                <clipPath id="orangeCircleClip">
+                  <circle cx="100" cy="100" r="98" />
+                </clipPath>
+              </svg>
+            </div>
           </div>
-        </div>
-        <form className="flex flex-col gap-4 ml-5.5">
-          <div className="flex border rounded-lg px-2 py-1 w-85">
+          <form
+            onSubmit={handleUpdateProfile}
+            className="flex flex-col gap-4 ml-5.5"
+          >
+            <div className="flex border rounded-lg px-2 py-1 w-85">
               <UserIcon size={24} className="text-(--orange)" />
 
               <input
@@ -311,8 +390,8 @@ useEffect(() => {
               <input
                 type="tel"
                 placeholder="Phone No"
-                name="phone_no"
-                id="phone_no"
+                name="phone_number"
+                id="phone_number"
                 value={editData.phone_number}
                 onChange={onChangeEditFormData}
                 maxLength={10}
@@ -345,32 +424,30 @@ useEffect(() => {
                 className="w-65 px-2 focus:outline-none focus:ring-0"
               />
             </div>
+            {error && (
+              <p className="text-red-600 text-sm" role="alert">
+                {error}
+              </p>
+            )}
+
             <div className="flex justify-center w-85 pt-1">
-              <input 
-              type="submit" 
-              name="submit"
-              id="submit"
-              className="flex
-                items-center
-                justify-center
-                font-semibold
-                border
-                rounded-lg
-                w-30
-                h-10
-                hover:cursor-pointer
-                bg-[linear-gradient(90deg,#A9701E_0%,#C2872E_100%)]
-                text-white
-                transition-all
-                duration-300
-                hover:shadow-[0_0_20px_rgba(194,135,46,0.5)]
-                hover:brightness-110"
-              
-              />
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex items-center justify-center font-semibold
+      border rounded-lg w-30 h-10
+      disabled:opacity-60 disabled:cursor-not-allowed
+      hover:cursor-pointer
+      bg-[linear-gradient(90deg,#A9701E_0%,#C2872E_100%)]
+      text-white transition-all duration-300
+      hover:brightness-110"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
             </div>
-        </form>
-      
-    </div>}
-  </>
+          </form>
+        </div>
+      )}
+    </>
   );
 }

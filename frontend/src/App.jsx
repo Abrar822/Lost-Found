@@ -10,17 +10,18 @@ import Profile from "./components/Profile";
 import PageNotFound from "./components/PageNotFound";
 import Alert from "./components/Alert";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { getUserDetails } from "./api/ProfileApi"
+import { getUserDetails } from "./api/ProfileApi";
 import { useUserContext } from "./contexts/UserRoleContext";
-import { getOrganizationDetails,getUsers } from "./api/AdminApi";
+import { getOrganizationDetails, getUsers } from "./api/AdminApi";
 import ForgotPassword from "./components/ForgotPassword";
+import ItemDetails from "./components/ItemDetails";
 
 // HttpOnly + Secure + SameSite cookie
 // what is it
 function App() {
-  const { userRole, setUserRole } = useUserContext()
+  const { userRole, setUserRole } = useUserContext();
   const [loading, setLoading] = useState(false);
-  const [forgotPwd, setForgotPwd] = useState({state: false, role: ''});
+  const [forgotPwd, setForgotPwd] = useState({ state: false, role: "" });
   const [userAuth, setUserAuth] = useState({
     state: false,
     page: "signup",
@@ -37,15 +38,15 @@ function App() {
     name: "",
     email: "",
     phone_number: "",
-    code: ""
-  })
+    code: "",
+  });
   const [organization, setOrganization] = useState({
     name: "",
     code: "",
     email: "",
-    users: ""
-  })
-  const [users, setUsers] = useState([])
+    users: "",
+  });
+  const [users, setUsers] = useState([]);
 
   function isTokenValid(token) {
     try {
@@ -79,42 +80,41 @@ function App() {
 
   useEffect(() => {
     const userDetails = async () => {
-      const data = await getUserDetails()
+      const data = await getUserDetails();
       setUserData({
         name: data.Name,
         email: data.Email,
         phone_number: data.Phone_Number,
-        code: data.Code
-      })
-    }
+        code: data.Code,
+      });
+    };
     const organizationDetails = async () => {
-      const data = await getOrganizationDetails()
+      const data = await getOrganizationDetails();
       setOrganization({
         name: data.Name,
         code: data.Code,
         email: data.Email,
-        users: data.Users
-      })
-    }
+        users: data.Users,
+      });
+    };
     const getUsersDetails = async () => {
-      const data = await getUsers()
+      const data = await getUsers();
       const formattedUsers = data.map((user) => ({
         u_id: user.U_id,
         name: user.Name,
         email: user.Email,
-        phone: user.Phone_Number
-      }))
-      setUsers(formattedUsers)
-    }
+        phone: user.Phone_Number,
+      }));
+      setUsers(formattedUsers);
+    };
     if (isLog && userRole === "user") {
-      userDetails()
+      userDetails();
     }
     if (isLog && userRole === "admin") {
-      organizationDetails()
-      getUsersDetails()
+      organizationDetails();
+      getUsersDetails();
     }
-
-  }, [isLog, userRole])
+  }, [isLog, userRole]);
 
   useEffect(() => {
     const getCookie = (name) => {
@@ -205,11 +205,37 @@ function App() {
         <Routes>
           <Route
             path={"/dashboard"}
-            element={<Dashboard organization={organization} setOrganization={setOrganization} users={users} setUsers={setUsers} isLog={isLog} setUserAuth={setUserAuth} userRole={userRole} setAlert={setAlert} loading={loading} setLoading={setLoading} />}
+            element={
+              <Dashboard
+                organization={organization}
+                setOrganization={setOrganization}
+                users={users}
+                setUsers={setUsers}
+                isLog={isLog}
+                setUserAuth={setUserAuth}
+                userRole={userRole}
+                setAlert={setAlert}
+                loading={loading}
+                setLoading={setLoading}
+              />
+            }
           ></Route>
           <Route
             path={"/"}
-            element={<Dashboard organization={organization} setOrganization={setOrganization} users={users} setUsers={setUsers} isLog={isLog} setUserAuth={setUserAuth} userRole={userRole} setAlert={setAlert} loading={loading} setLoading={setLoading} />}
+            element={
+              <Dashboard
+                organization={organization}
+                setOrganization={setOrganization}
+                users={users}
+                setUsers={setUsers}
+                isLog={isLog}
+                setUserAuth={setUserAuth}
+                userRole={userRole}
+                setAlert={setAlert}
+                loading={loading}
+                setLoading={setLoading}
+              />
+            }
           ></Route>
           <Route
             path={"/post/report_lost_items"}
@@ -259,6 +285,7 @@ function App() {
               </ProtectedRoute>
             }
           ></Route>
+          <Route path="/item-details" element={<ItemDetails />} />
           <Route
             path={"*"}
             element={<PageNotFound setUserAuth={setUserAuth} />}

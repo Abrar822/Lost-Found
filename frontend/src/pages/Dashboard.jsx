@@ -37,7 +37,7 @@ export default function Dashboard({isLog, setUserAuth, userRole, organization, s
       </div>
 
       <div className="lost-found-container max-w-[800px] h-[230px] mx-auto flex justify-between items-center gap-10 p-4 mb-10">
-        <div className="left bg-(--pure-white) max-w-[50%] w-[50%] p-2.5 h-full flex flex-col items-start rounded-2xl">
+        <div className="left bg-(--pure-white) max-w-[50%] w-[50%] p-2.5 h-full flex flex-col items-start rounded-2xl shadow-lg">
           <h3 className="text-(--btn-black) self-center font-bold text-xl mt-2.5">
             Report Lost Item
           </h3>
@@ -56,7 +56,7 @@ export default function Dashboard({isLog, setUserAuth, userRole, organization, s
             Post Lost Item
           </button>
         </div>
-        <div className="p-2.5 right bg-(--pure-white) max-w-[50%] w-[50%] h-full flex flex-col items-start rounded-2xl">
+        <div className="p-2.5 right bg-(--pure-white) max-w-[50%] w-[50%] h-full flex flex-col items-start rounded-2xl shadow-lg">
           <h3 className="text-(--btn-black) self-center font-bold text-xl mt-2.5">
             Report Found Item
           </h3>

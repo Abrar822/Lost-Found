@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import defaultItem from "../assets/default-item.png";
 import {
   User,
   CalendarBlank,
@@ -10,10 +11,7 @@ import {
   EnvelopeIcon,
   CodeIcon,
 } from "@phosphor-icons/react";
-import {
-  getUserDetails,
-  updateUserDetails,
-} from "../api/ProfileApi";
+import { getUserDetails, updateUserDetails } from "../api/ProfileApi";
 
 export default function Profile({
   userData,
@@ -117,13 +115,13 @@ export default function Profile({
         />
       )}
 
-      <div className="min-h-screen  flex justify-center py-10 px-4 mt-15">
-        <div className="bg-white w-full max-w-xl rounded-2xl shadow-sm p-8">
+      <div className="min-h-screen flex justify-start py-10 px-10 mt-15 bg-(--navbar)">
+        <div className="w-full max-w rounded-2xl px-8 py-2">
           {/* Header */}
-          <h1 className="text-3xl font-bold text-[#1e293b] mb-8">Profile</h1>
+          <h1 className="text-4xl font-bold text-[#1e293b] mb-8">Profile</h1>
 
           {/* User Info Section */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12 bg-white p-5 rounded-lg shadow-lg">
             <div className="flex items-center gap-6">
               <div
                 onClick={() => setActiveTab("lost")}
@@ -158,7 +156,7 @@ export default function Profile({
           </div>
 
           {/* My Posts Section */}
-          <div>
+          <div className="bg-white p-5 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold text-gray-900 mb-6">My Posts</h2>
 
             {/* Tabs */}
@@ -168,7 +166,7 @@ export default function Profile({
                 className={`flex-1 pb-3 pt-2 text-center text-sm sm:text-base rounded-tl-lg font-bold transition-colors ${
                   activeTab === "lost"
                     ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
-                    : "text-gray-400 hover:text-gray-600"
+                    : "text--(--text-1)"
                 }`}
               >
                 Lost Items
@@ -178,7 +176,7 @@ export default function Profile({
                 className={`flex-1 pb-1 text-center text-sm sm:text-base rounded-tr-lg font-bold transition-colors ${
                   activeTab === "found"
                     ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
-                    : "text-gray-400 hover:text-gray-600"
+                    : "text--(--text-1)"
                 }`}
               >
                 Found Items
@@ -208,11 +206,18 @@ export default function Profile({
                   >
                     <div className="flex items-center gap-4 sm:gap-6">
                       {/* Item Image */}
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-gray-100 shadow-sm"
-                      />
+                      <div className="flex border items-center justify-center h-20 overflow-hidden rounded-lg">
+                        <img
+                          src={item.image || defaultItem}
+                          alt={item.title || "Item image"}
+                          loading="eager"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = defaultItem;
+                          }}
+                          className="w-30 h-16 rounded-xl border border-gray-100 rotate-315"
+                        />
+                      </div>
 
                       {/* Item Details */}
                       <div className="flex flex-col gap-1">

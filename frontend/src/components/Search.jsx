@@ -5,7 +5,7 @@ export default function Search() {
 
   return (
     <>
-      <div className="search-container bg-(--pure-white) max-w-[750px] mx-auto rounded-2xl mb-10 py-2">
+      <div className="search-container bg-(--pure-white) max-w-[750px] mx-auto rounded-2xl mb-10 py-2 shadow-lg">
         <div className="title overflow-hidden mx-auto w-[50%] rounded-2xl h-[40px] bg-(--navbar) text-(--btn-black) font-bold flex justify-between items-center my-3">
           <button
             className={`${SearchState == "founded_item" ? "bg-(--orange) text-(--pure-white)" : ""} finder h-full w-[230px] cursor-pointer transition-all duration-150 ease-in`}

@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   CalendarBlank,
@@ -7,6 +6,7 @@ import {
   Phone,
   FileText,
 } from "@phosphor-icons/react";
+import defaultItem from "../assets/default-item.png";
 
 export default function ItemDetails() {
   const navigate = useNavigate();
@@ -18,9 +18,7 @@ export default function ItemDetails() {
   if (!item) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-gray-600">
-          Item details are unavailable.
-        </p>
+        <p className="text-gray-600">Item details are unavailable.</p>
 
         <button
           onClick={() => navigate(-1)}
@@ -33,14 +31,11 @@ export default function ItemDetails() {
   }
 
   const formattedDate = item.date
-    ? new Date(`${item.date}T00:00:00`).toLocaleDateString(
-        "en-GB",
-        {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }
-      )
+    ? new Date(`${item.date}T00:00:00`).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
     : "Date unavailable";
 
   const isLost = item.type?.toLowerCase() === "lost";
@@ -48,7 +43,6 @@ export default function ItemDetails() {
   return (
     <div className="min-h-screen bg-(--bg) px-4 py-8 mt-15">
       <div className="max-w-5xl mx-auto">
-
         {/* Back button */}
         <button
           onClick={() => navigate(-1)}
@@ -60,27 +54,23 @@ export default function ItemDetails() {
 
         {/* Item details card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-8">
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
             {/* Item image */}
-            <div>
-              {item.image ? (
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-72 sm:h-96 object-cover rounded-xl border"
-                />
-              ) : (
-                <div className="w-full h-72 sm:h-96 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400">
-                  No image available
-                </div>
-              )}
+            <div className="w-full h-64 sm:h-80 border border-gray-300 rounded-xl overflow-hidden flex items-center justify-center">
+              <img
+                src={item.image || defaultItem}
+                alt={item.title || "Item image"}
+                loading="eager"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = defaultItem;
+                }}
+                className="w-full h-full object-contain rotate-323"
+              />
             </div>
 
             {/* Item information */}
             <div className="flex flex-col gap-5">
-
               <div>
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
@@ -101,7 +91,7 @@ export default function ItemDetails() {
                 <div className="py-1">
                   <CalendarBlank size={26} />
                 </div>
-                
+
                 <div>
                   <p className="font-semibold text-gray-800">
                     Date {isLost ? "Lost" : "Found"}
@@ -114,11 +104,9 @@ export default function ItemDetails() {
                 <div className="py-1">
                   <MapPin size={26} />
                 </div>
-                
+
                 <div>
-                  <p className="font-semibold text-gray-800">
-                    Location
-                  </p>
+                  <p className="font-semibold text-gray-800">Location</p>
                   <p>{item.location || "Not provided"}</p>
                 </div>
               </div>
@@ -127,14 +115,10 @@ export default function ItemDetails() {
                 <div className="py-1">
                   <FileText size={26} />
                 </div>
-                
+
                 <div>
-                  <p className="font-semibold text-gray-800">
-                    Description
-                  </p>
-                  <p>
-                    {item.description || "No description available"}
-                  </p>
+                  <p className="font-semibold text-gray-800">Description</p>
+                  <p>{item.description || "No description available"}</p>
                 </div>
               </div>
 
@@ -142,15 +126,12 @@ export default function ItemDetails() {
                 <div className="py-1">
                   <Phone size={26} />
                 </div>
-                
+
                 <div>
-                  <p className="font-semibold text-gray-800">
-                    Contact
-                  </p>
+                  <p className="font-semibold text-gray-800">Contact</p>
                   <p>{item.contact || "Contact information unavailable"}</p>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -159,7 +140,6 @@ export default function ItemDetails() {
               ? "If you have found this item, please contact the owner using the details above."
               : "If this item belongs to you, please contact the person who reported it found."}
           </div>
-
         </div>
       </div>
     </div>

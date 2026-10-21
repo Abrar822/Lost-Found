@@ -127,19 +127,23 @@ def get_lost_items(
 
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT
-                "L_id" AS id,
-                "Item_Name" AS title,
+                l."L_id" AS id,
+                l."Item_Name" AS title,
                 'Lost' AS type,
-                "Date_Lost" AS date,
-                "Location_Lost" AS location,
-                "Image_Upload" AS image
-            FROM "Loser"
-            ORDER BY "Date_Lost" DESC NULLS LAST, "L_id" DESC
-            """
-        )
+                l."Date_Lost" AS date,
+                l."Location_Lost" AS location,
+                l."Image_Upload" AS image,
+                l."Description" AS description,
+                u."Phone_Number" AS contact
+            FROM "Loser" AS l
+            LEFT JOIN "User" AS u
+                ON l."U_id" = u."U_id"
+            ORDER BY
+                l."Date_Lost" DESC NULLS LAST,
+                l."L_id" DESC
+        """)
 
         return cursor.fetchall()
 
@@ -164,20 +168,23 @@ def get_found_items(
 
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        print("Authenticated user ID:", user_id)
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT
-                "F_id" AS id,
-                "Item_Name" AS title,
+                f."F_id" AS id,
+                f."Item_Name" AS title,
                 'Found' AS type,
-                "Date_Found" AS date,
-                "Location_Lost" AS location,
-                "Image_Upload" AS image
-            FROM "Finder"
-            ORDER BY "Date_Found" DESC NULLS LAST, "F_id" DESC
-            """
-        )
+                f."Date_Found" AS date,
+                f."Location_Lost" AS location,
+                f."Image_Upload" AS image,
+                f."Description" AS description,
+                u."Phone_Number" AS contact
+            FROM "Finder" AS f
+            LEFT JOIN "User" AS u
+                ON f."U_id" = u."U_id"
+            ORDER BY
+                f."Date_Found" DESC NULLS LAST,
+                f."F_id" DESC
+        """)
 
         return cursor.fetchall()
 

@@ -93,3 +93,10 @@ class ResetPassword(BaseModel):
     new_password: str
     role: Literal['user','admin']
     otp: str
+
+class SearchDetails(BaseModel):
+    item_name: str
+    description: str
+    date: str
+    location: str
+    role: Literal['loser', 'finder']

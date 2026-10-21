@@ -13,3 +13,6 @@ def db_connect():
         raise RuntimeError(f'Failed to connect to database.' + str(err))
     finally:
         if conn: conn.close()
+
+def get_connection_obj():
+    return psycopg2.connect(dbname=os.getenv('DATABASE'), host=os.getenv('HOST'), user=os.getenv('USER'), port=int(os.getenv('PORT')), password=os.getenv('PASSWORD'))

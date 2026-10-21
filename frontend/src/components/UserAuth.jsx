@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../App.css";
 import {
   EyeIcon,
   EyeSlashIcon,
@@ -24,8 +25,9 @@ export default function UserAuth({
   setIsLog,
   userRole,
   setUserRole,
-  setForgotPwd
+  setForgotPwd,
 }) {
+  const [genOtpLoading, setGenOtpLoading] = useState(false);
   const [signupData, setSignupData] = useState({
     name: "",
     phone_number: "",
@@ -71,76 +73,92 @@ export default function UserAuth({
   }
 
   async function genOtp(event) {
-    event.preventDefault()
-    const data = await generateOtp(signupData.email)
-    if (!data) {
-      setAlert({msg:"Failed to generate OTP", state:true})
-    }
-    else {
-      setAlert({msg:"OTP is sent to email sucessfully and valid for only 5 minutes "})
+    event.preventDefault();
+    try {
+      setGenOtpLoading(true);
+      const data = await generateOtp(signupData.email);
+      if (!data) {
+        setAlert({ msg: "Failed to generate OTP", state: true });
+      } else {
+        setAlert({
+          msg: "OTP is sent to email sucessfully and valid for only 5 minutes ",
+          state: true
+        });
+      }
+    } catch (err) {
+      setAlert({ msg: err.message, state: true });
+    } finally {
+      setGenOtpLoading(false);
     }
   }
 
   async function onSubmit(event) {
     event.preventDefault();
-    if(userAuth.page === 'login') {
-      if(loginData.email === '' || loginData.password === '') {
-        setAlert({msg: 'All the details must be filled.', state: true})
-        return
+    if (userAuth.page === "login") {
+      if (loginData.email === "" || loginData.password === "") {
+        setAlert({ msg: "All the details must be filled.", state: true });
+        return;
       }
       const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.email);
-      if(!isEmailValid) {
-        setAlert({msg: 'Enter a valid email.', state: true})
+      if (!isEmailValid) {
+        setAlert({ msg: "Enter a valid email.", state: true });
         return;
       }
       try {
-        setLoading(true)
+        setLoading(true);
         let response = await userLogin(loginData);
-        if(response) {
-          setAlert({msg: 'Login Successful.', state: true})
-          let token = response.access_token
-          document.cookie = `user_jwt=${token};path=/;`
-          setUserAuth({state: false, page: ''})
-          setUserRole('user')
-          setIsLog(true)
+        if (response) {
+          setAlert({ msg: "Login Successful.", state: true });
+          let token = response.access_token;
+          document.cookie = `user_jwt=${token};path=/;`;
+          setUserAuth({ state: false, page: "" });
+          setUserRole("user");
+          setIsLog(true);
         }
-        setLoading(false)
-      } catch(err) {
-        setAlert({msg: 'Login Failed. ' + String(err.message), state: true})
+        setLoading(false);
+      } catch (err) {
+        setAlert({ msg: "Login Failed. " + String(err.message), state: true });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-
-    } else if(userAuth.page === 'signup') {
-      if(signupData.email === '' || signupData.password === '' || signupData.c_password === '' || signupData.code === '' || signupData.name === '' || signupData.phone_number === '' || signupData.otp === '') {
-        setAlert({msg: 'All the details must be filled.', state: true})
+    } else if (userAuth.page === "signup") {
+      if (
+        signupData.email === "" ||
+        signupData.password === "" ||
+        signupData.c_password === "" ||
+        signupData.code === "" ||
+        signupData.name === "" ||
+        signupData.phone_number === "" ||
+        signupData.otp === ""
+      ) {
+        setAlert({ msg: "All the details must be filled.", state: true });
         return;
       }
-      if(signupData.phone_number.length != 10) {
-        setAlert({msg: 'Enter a valid phone number.', state: true})
+      if (signupData.phone_number.length != 10) {
+        setAlert({ msg: "Enter a valid phone number.", state: true });
         return;
       }
       const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(signupData.email);
-      if(!isEmailValid) {
-        setAlert({msg: 'Enter a valid email.', state: true})
-        return
+      if (!isEmailValid) {
+        setAlert({ msg: "Enter a valid email.", state: true });
+        return;
       }
       try {
-        if(signupData.password !== signupData.c_password) {
+        if (signupData.password !== signupData.c_password) {
           setAlert({ msg: "Passwords do not match.", state: true });
           return;
         }
-        setLoading(true)
+        setLoading(true);
         let response = await userSignup(signupData);
-        if(response) {
-          setAlert({msg: 'Signup Successful.', state: true})
-          setUserAuth({state: true, page: 'login'})
+        if (response) {
+          setAlert({ msg: "Signup Successful.", state: true });
+          setUserAuth({ state: true, page: "login" });
         }
-        setLoading(false)
-      } catch(err) {
-        setAlert({state: true, msg: 'Signup Failed. ' + String(err.message)})
+        setLoading(false);
+      } catch (err) {
+        setAlert({ state: true, msg: "Signup Failed. " + String(err.message) });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
   }
@@ -375,12 +393,20 @@ export default function UserAuth({
               "
               onClick={onSubmit}
             >
-              {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}<span>Login</span>
+              {loading && (
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              )}
+              <span>Login</span>
             </button>
 
-            {
-              userAuth.page === 'login' && <button className="forgot-password m-0 p-0 text-[12px] font-bold text-(--orange) cursor-pointer" onClick={() => setForgotPwd({state: true, role: 'user'})}>Forgot Password</button>
-            }
+            {userAuth.page === "login" && (
+              <button
+                className="forgot-password m-0 p-0 text-[12px] font-bold text-(--orange) cursor-pointer"
+                onClick={() => setForgotPwd({ state: true, role: "user" })}
+              >
+                Forgot Password
+              </button>
+            )}
 
             {/* Admin Login */}
             <div className="flex justify-center h-9 mb-4">
@@ -550,35 +576,44 @@ export default function UserAuth({
                 value={signupData.otp}
                 onChange={onSignupChange}
                 className="
-                  min-w-0
-                  flex-1
-                  border
-                  rounded-lg
-                  px-2
-                  py-2
-                  focus:outline-none
-                  focus:ring-0
-                "
+      min-w-0
+      flex-1
+      border
+      rounded-lg
+      px-2
+      py-2
+      focus:outline-none
+      focus:ring-0
+    "
               />
 
               <button
                 type="button"
                 className="
-                  shrink-0
-                  border
-                  rounded-lg
-                  px-6
-                  hover:cursor-pointer
-                  transition-all
-                  duration-200
-                  hover:bg-(--orange)
-                  hover:text-white
-                  hover:shadow-md
-                  active:scale-95
-                "
+      group
+      shrink-0
+      border
+      rounded-lg
+      px-6
+      hover:cursor-pointer
+      transition-all
+      duration-200
+      hover:bg-(--orange)
+      hover:text-white
+      hover:shadow-md
+      active:scale-95
+      flex
+      items-center
+      justify-center
+    "
                 onClick={genOtp}
+                disabled={genOtpLoading}
               >
-                Generate
+                {!genOtpLoading ? (
+                  <span>Generate</span>
+                ) : (
+                  <span className="otp-spinner user-spinner" />
+                )}
               </button>
             </div>
 
@@ -605,7 +640,10 @@ export default function UserAuth({
               "
               onClick={onSubmit}
             >
-              {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}<span>Sign Up</span>
+              {loading && (
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              )}
+              <span>Sign Up</span>
             </button>
 
             {/* Admin Sign Up */}

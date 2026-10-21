@@ -1,7 +1,7 @@
 import Search from "../components/Search";
 import { useNavigate } from "react-router-dom";
 import AdminDashboard from "./AdminDashboard";
-export default function Dashboard({isLog, setUserAuth, userRole, organization, setOrganization, users, setUsers, setAlert, loading, setLoading}) {
+export default function Dashboard({isLog, setUserAuth, userRole, organization, setOrganization, users, setUsers, setAlert, loading, setLoading, retrievedData, setChangeInPost}) {
   const navigate = useNavigate()
   if (isLog && userRole === "admin") {
     return <AdminDashboard organization={organization} setOrganization={setOrganization} users={users} setUsers={setUsers} setAlert={setAlert} loading={loading} setLoading={setLoading} />;
@@ -77,7 +77,7 @@ export default function Dashboard({isLog, setUserAuth, userRole, organization, s
         </div>
       </div>
 
-      <Search />
+      <Search setAlert={setAlert} retrievedData={retrievedData} isLog={isLog} setChangeInPost={setChangeInPost} />
     </>
   );
 }

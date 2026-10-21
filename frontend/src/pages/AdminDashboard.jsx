@@ -217,7 +217,8 @@ export default function AdminDashboard({ organization, setOrganization, users, s
                                 className="flex-1 min-w-0 px-2 focus:outline-none focus:ring-0"
                             />
                         </div>
-                        <button type="submit" className="self-center inline-flex items-center justify-center gap-2 rounded-lg bg-(--green) px-6 py-2 text-white hover:brightness-120 cursor-pointer disabled:cursor-not-allowed disabled:opacity-80">
+                        <button type="submit" className="self-center inline-flex items-center justify-center gap-2 rounded-lg bg-(--green) px-6 py-2 text-white hover:brightness-120 cursor-pointer disabled:cursor-not-allowed disabled:opacity-80"
+                        disabled={loading}>
                             {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}<span>{loading ? "Updating..." : "Submit"}</span>
                         </button>
                     </form>

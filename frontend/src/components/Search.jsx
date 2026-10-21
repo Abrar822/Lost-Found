@@ -69,10 +69,10 @@ export default function Search({
       console.log("", data);
       data = data.map((ele) => ({
         item_name: ele["Item_Name"],
-        location: ele["Location"],
+        location: ele["Location_Lost"],
         description: ele["Description"],
         date: ele[
-          `${SearchState === "lost_item" ? "Date_Lost" : "Date_found"}`
+          `${SearchState === "lost_item" ? "Date_Lost" : "Date_Found"}`
         ],
       }));
       setFilterArr(data);
@@ -82,6 +82,11 @@ export default function Search({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log('displayfound', displayFound)
+    console.log('displaylost', displayLost)
+  }, [filterArr, displayFound, displayLost])
 
   const clearSearch = () => {
     setSearchDetails({
@@ -103,6 +108,7 @@ export default function Search({
             className={`${SearchState == "founded_item" ? "bg-(--orange) text-(--pure-white)" : ""} finder h-full w-[230px] cursor-pointer transition-all duration-150 ease-in`}
             onClick={() => {
               SetSearchState("founded_item");
+              clearSearch()
             }}
           >
             Search Found Items
@@ -112,6 +118,7 @@ export default function Search({
             className={`${SearchState == "lost_item" ? "bg-(--green) text-(--pure-white)" : ""} loser h-full w-[230px] cursor-pointer transition-all duration-150 ease-in`}
             onClick={() => {
               SetSearchState("lost_item");
+              clearSearch()
             }}
           >
             Search Lost Items

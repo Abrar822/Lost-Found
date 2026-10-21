@@ -13,16 +13,17 @@ import {
 import {
   getUserDetails,
   updateUserDetails,
-  getLostItems,
-  getFoundItems,
 } from "../api/ProfileApi";
 
-export default function Profile({ userData, setUserData }) {
+export default function Profile({
+  userData,
+  setUserData,
+  lostItems,
+  foundItems,
+  itemsLoading,
+  itemsError,
+}) {
   const navigate = useNavigate();
-  const [lostItems, setLostItems] = useState([]);
-  const [foundItems, setFoundItems] = useState([]);
-  const [itemsLoading, setItemsLoading] = useState(true);
-  const [itemsError, setItemsError] = useState("");
   const [activeTab, setActiveTab] = useState("lost");
   const [edit, setEdit] = useState(false);
   const [error, setError] = useState("");
@@ -97,39 +98,6 @@ export default function Profile({ userData, setUserData }) {
       [event.target.name]: event.target.value,
     }));
   };
-
-  useEffect(() => {
-    const loadItems = async () => {
-      setItemsLoading(true);
-      setItemsError("");
-
-      try {
-        const lost = await getLostItems();
-        console.log("Lost items API response:", lost);
-        setLostItems(Array.isArray(lost) ? lost : []);
-      } catch (err) {
-        console.error("Lost items API error:", err);
-        setItemsError(
-          (prev) => `${prev}${prev ? "\n" : ""}Lost items: ${err.message}`,
-        );
-      }
-
-      try {
-        const found = await getFoundItems();
-        console.log("Found items API response:", found);
-        setFoundItems(Array.isArray(found) ? found : []);
-      } catch (err) {
-        console.error("Found items API error:", err);
-        setItemsError(
-          (prev) => `${prev}${prev ? "\n" : ""}Found items: ${err.message}`,
-        );
-      }
-
-      setItemsLoading(false);
-    };
-
-    loadItems();
-  }, []);
 
   const currentItems = activeTab === "lost" ? lostItems : foundItems;
   console.log("Lost items:", lostItems);

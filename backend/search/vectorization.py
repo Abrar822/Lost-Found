@@ -104,7 +104,7 @@ def calculate_similarity_lost(data, query):
             "Item_Name": d[0],
             "Description": d[1],
             "Location_Lost": d[2],
-            "Date_found": d[3],
+            "Date_Lost": d[3],
         }
         for d in result
     ]
@@ -151,7 +151,7 @@ def calculate_similarity_found(data, query):
             "Item_Name": d[0],
             "Description": d[1],
             "Location_Lost": d[2],
-            "Date_Lost": d[3],
+            "Date_Found": d[3],
         }
         for d in result
     ]

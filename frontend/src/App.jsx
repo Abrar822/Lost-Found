@@ -53,6 +53,7 @@ function App() {
   });
   const [users, setUsers] = useState([]);
 
+  // function that checks if the toke is expired or not
   function isTokenValid(token) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -63,6 +64,7 @@ function App() {
     }
   }
 
+  // this checks of the token present in browser cookie
   let tokenAvailable = document.cookie
     .split(";")
     .map((cookie) => cookie.trim())
@@ -75,6 +77,7 @@ function App() {
   const [activePost, setActivePost] = useState("lost");
   const [changeInPost, setChangeInPost] = useState(false);
 
+  // to display alert box
   useEffect(() => {
     const id = setTimeout(() => {
       setAlert({ msg: "", state: false });
@@ -84,6 +87,7 @@ function App() {
     };
   }, [alert]);
 
+  // fetching the user details for the profile section in advance
   useEffect(() => {
     const userDetails = async () => {
       const data = await getUserDetails();
@@ -94,6 +98,8 @@ function App() {
         code: data.Code,
       });
     };
+
+    // fetching the lost and found reported items
     const loadItems = async () => {
       setItemsLoading(true);
       setItemsError("");
@@ -113,6 +119,8 @@ function App() {
         setItemsLoading(false);
       }
     };
+
+    // fetching the details of admin
     const organizationDetails = async () => {
       const data = await getOrganizationDetails();
       setOrganization({
@@ -142,6 +150,7 @@ function App() {
     }
   }, [isLog, userRole]);
 
+  // getting the cookie if there in starting only
   useEffect(() => {
     const getCookie = (name) => {
       return document.cookie
@@ -167,6 +176,7 @@ function App() {
     }
   }, []);
 
+  
   const [retrievedData, setRetrivedData] = useState({
     foundData: [],
     lostData: [],
@@ -189,14 +199,14 @@ function App() {
           location: ele[2],
           description: ele[1],
           date: ele[3],
-          image: ele[4]
+          image: ele[4],
         }));
         foundData = foundData.map((ele) => ({
           item_name: ele[0],
           location: ele[2],
           description: ele[1],
           date: ele[3],
-          image: ele[4]
+          image: ele[4],
         }));
 
         setRetrivedData({
@@ -214,6 +224,7 @@ function App() {
     };
     exe();
   }, [isLog, changeInPost]);
+
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -285,6 +296,34 @@ function App() {
     }
   }, [isLog, userRole]);
 
+  // fetching the profile details
+  const [editData, setEditData] = useState({
+    name: "",
+    email: "",
+    phone_number: "",
+    code: "",
+  });
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const data = await getUserDetails();
+
+        const user = {
+          name: data.Name,
+          email: data.Email,
+          phone_number: data.Phone_Number,
+          code: data.Code ?? "",
+        };
+        setUserData(user);
+        setEditData(user);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    loadProfile();
+  }, [setUserData]);
+
   return (
     <>
       {alert.state && <Alert msg={alert.msg} />}
@@ -344,6 +383,7 @@ function App() {
           setIsLog={setIsLog}
           setAlert={setAlert}
           userRole={userRole}
+          userData={userData}
         />
 
         <Routes>
@@ -438,6 +478,8 @@ function App() {
                   foundItems={foundItems}
                   itemsLoading={itemsLoading}
                   itemsError={itemsError}
+                  editData={editData}
+                  setEditData={setEditData}
                 />
               </ProtectedRoute>
             }

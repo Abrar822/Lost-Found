@@ -73,14 +73,6 @@ export default function AdminDashboard({ organization, setOrganization, users, s
 
     return (
         <>
-            {/* {isEdit &&
-                <div
-                    className="overlay absolute inset-0 bg-black/60 z-1"
-                    onClick={() => {
-                        setIsEdit(false);
-                    }}
-                ></div>
-            } */}
             <div className="absolute top-17.5 left-40 right-40 flex flex-col gap-10">
                 <div className="mt-6">
                     <div className="font-bold text-4xl">
@@ -155,7 +147,7 @@ export default function AdminDashboard({ organization, setOrganization, users, s
                         {users.map((user) => (
                             <div key={user.u_id} className="flex min-w-0 items-center gap-4 border rounded-lg border-gray-300 p-4">
                                 <div className="flex items-center justify-center shrink-0 h-12 w-12 rounded-full text-xl font-semibold text-(--dark-green) bg-green-100">
-                                    {user.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}
+                                    {user.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}
                                 </div>
                                 <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                                     <div className="truncate font-bold">

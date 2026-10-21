@@ -20,48 +20,14 @@ export default function Profile({
   foundItems,
   itemsLoading,
   itemsError,
+  editData,
+  setEditData
 }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("lost");
   const [edit, setEdit] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [editData, setEditData] = useState({
-    name: "",
-    email: "",
-    phone_number: "",
-    code: "",
-  });
-  // useEffect(()=>{
-  //   setEditData({
-  //     name:userData.name,
-  //     email:userData.email,
-  //     phone_number:userData.phone_number,
-  //     code:userData.code
-  //   })
-  // },[userData])
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await getUserDetails();
-
-        const user = {
-          name: data.Name,
-          email: data.Email,
-          phone_number: data.Phone_Number,
-          code: data.Code ?? "",
-        };
-
-        setUserData(user);
-        setEditData(user);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-
-    loadProfile();
-  }, [setUserData]);
 
   const handleUpdateProfile = async (event) => {
     event.preventDefault();

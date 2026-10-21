@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 
-export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRole }) {
+export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRole, userData }) {
   const navigate = useNavigate();
   const location = useLocation();
   const logOut = () => {
@@ -25,7 +25,7 @@ export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRol
           <div className="logo tracking-wider text-3xl font-bold">
             Lost<span className="text-(--orange)">&</span>Found
           </div>
-          <ul className="menus flex gap-7 cursor-pointer text-[17px]">
+          <ul className="menus flex gap-7 text-[17px]">
             <li
               className={`h-[40px] text-(--text-1) font-bold rounded-lg flex justify-center items-center transition-all duration-150 ease-in-out active:scale-90`}
               onClick={() => {
@@ -64,20 +64,6 @@ export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRol
                 </button>
               </li>
             )}
-            {userRole === 'user' && isLog && (
-              <li
-                className={`h-[40px] text-(--text-1) font-bold rounded-lg flex justify-center items-center transition-all duration-150 ease-in-out active:scale-90`}
-                onClick={() => {
-                  navigate("/profile");
-                }}
-              >
-                <button
-                  className={`cursor-pointer border-0 outline-0 py-1 px-3 w-full ${location.pathname.includes("/profile") ? "text-(--orange)" : ""}`}
-                >
-                  Profile
-                </button>
-              </li>
-            )}
             {!isLog && (
               <li
                 className="h-[40px] text-(--pure-white) bg-(--btn-black) font-bold rounded-lg flex justify-center items-center transition-all duration-150 ease-in active:scale-95 w-[90px]overflow-hidden"
@@ -98,6 +84,17 @@ export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRol
                 <button className="cursor-pointer border-0 outline-0 py-1 px-3 w-full transition-all duration-150 ease-in hover:opacity-90">
                   Log Out
                 </button>
+              </li>
+            )}
+            {isLog && (
+              <li
+                className={`h-[40px] text-(--text-1) font-bold rounded-lg flex justify-center items-center ${userRole === 'user'? 'transition-all duration-150 ease-in-out active:scale-90': ''}`}
+                onClick={() => {
+                  if(userRole !== 'user') return
+                  navigate("/profile");
+                }}
+              >
+                <div className={`${userRole === 'admin' ? '': 'cursor-pointer'} flex justify-center items-center text-[20px] initial w-[35px] h-[35px] rounded-full self-center text-white font-bold ${userRole === 'admin' ? 'bg-(--green)': ''} ${userRole === 'user' ? 'bg-(--orange)': ''}`}>{userData.name[0]?.toUpperCase()}</div>
               </li>
             )}
           </ul>

@@ -31,7 +31,7 @@ export async function postLost(item) {
 }
 
 export async function postFound(item) {
-    let token = getToken()
+    let token = getUserToken()
     if (!token) {
         throw new Error("JWT token not found. Please log in again.");
     }

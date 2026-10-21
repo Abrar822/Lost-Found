@@ -15,6 +15,7 @@ import { useUserContext } from "./contexts/UserRoleContext";
 import { getOrganizationDetails, getUsers } from "./api/AdminApi";
 import ForgotPassword from "./components/ForgotPassword";
 import ItemDetails from "./components/ItemDetails";
+import { getFoundData, getLostData } from "./api/searchApi";
 
 // HttpOnly + Secure + SameSite cookie
 // what is it
@@ -68,6 +69,7 @@ function App() {
   );
 
   const [activePost, setActivePost] = useState("lost");
+  const [changeInPost, setChangeInPost] = useState(false)
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -140,6 +142,42 @@ function App() {
       setIsLog(false);
     }
   }, []);
+
+
+  const [retrievedData, setRetrivedData] = useState({
+    foundData: [], lostData: []
+  })
+  useEffect(() => {
+    console.log('entered')
+    if(!isLog) return;
+    // if(!changeInPost) return
+    console.log('started')
+    const exe = async () => {
+      let [lostData, foundData] = await Promise.all([
+        getLostData(),
+        getFoundData(),
+      ]);
+      console.log('fetched')
+      console.log(lostData, foundData)
+      lostData = lostData.map(ele => ({item_name: ele[0], location: ele[2], description: ele[1], date: ele[3]}))
+      foundData = foundData.map(ele => ({item_name: ele[0], location: ele[2], description: ele[1], date: ele[3]}))
+      
+      setRetrivedData({
+        foundData: [...foundData], lostData: [...lostData]
+      })
+      console.log(retrievedData)
+      console.log('ended')
+    }
+    try {
+      setLoading(true)
+      exe()
+    } catch(err) {
+      setAlert({msg: 'Failed to retrieve the items details.', state: true})
+    } finally {
+      setLoading(false)
+      setChangeInPost(false)
+    }
+  }, [isLog, changeInPost])
 
   return (
     <>
@@ -217,6 +255,8 @@ function App() {
                 setAlert={setAlert}
                 loading={loading}
                 setLoading={setLoading}
+                retrievedData={retrievedData}
+                setChangeInPost={setChangeInPost}
               />
             }
           ></Route>
@@ -234,6 +274,8 @@ function App() {
                 setAlert={setAlert}
                 loading={loading}
                 setLoading={setLoading}
+                retrievedData={retrievedData}
+                setChangeInPost={setChangeInPost}
               />
             }
           ></Route>
@@ -251,6 +293,7 @@ function App() {
                   loading={loading}
                   setLoading={setLoading}
                   setAlert={setAlert}
+                  setChangeInPost={setChangeInPost}
                 />
               </ProtectedRoute>
             }
@@ -269,6 +312,7 @@ function App() {
                   loading={loading}
                   setLoading={setLoading}
                   setAlert={setAlert}
+                  setChangeInPost={setChangeInPost}
                 />
               </ProtectedRoute>
             }

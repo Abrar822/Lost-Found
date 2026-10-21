@@ -3,6 +3,9 @@ from ..pydantic_models.schemas import PostItem
 from ..db_operations.db_connect import db_connect
 from psycopg2.extras import RealDictCursor
 from ..auth.jwt import get_u_id
+from ..search.vectorization import vectorize_found, vectorize_lost
+from ..search import data
+from ..search.vectorization import retrieve_items
 
 post_endpoints = APIRouter()
 
@@ -31,6 +34,8 @@ def lostItem(item: PostItem, conn=Depends(db_connect), user_id : int =Depends(ge
                 detail="Failed to create lost item.",
             )
         conn.commit()
+        retrieve_items()
+        vectorize_lost(data.data)
         return lost_item
     except HTTPException as httpErr:
         if conn:
@@ -73,6 +78,8 @@ def foundItem(item: PostItem, conn=Depends(db_connect), user_id : int =Depends(g
                 detail="Failed to create a Found Item",
             )
         conn.commit()
+        retrieve_items()
+        vectorize_found(data.data)
         return found_item
     except HTTPException as httpErr:
         raise httpErr

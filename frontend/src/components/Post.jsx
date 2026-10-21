@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CloudArrowUpIcon } from "@phosphor-icons/react";
 import { postLost, postFound } from "../api/PostApi";
 
-export default function Post({ setActivePost, activePost, loading, setLoading, setAlert }) {
+export default function Post({ setActivePost, activePost, loading, setLoading, setAlert, setChangeInPost }) {
 
   const [lostItemDetails, setLostItemDetails] = useState({
     item_name: "",
@@ -40,13 +40,13 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
 
   async function onSubmit(event) {
     event.preventDefault();
-
     if (activePost === "lost") {
       try {
         if (lostItemDetails.item_name === '' || lostItemDetails.description === '' || lostItemDetails.date === '' || lostItemDetails.location === '') {
           setAlert({ msg: 'All the details must be filled other than Image.', state: true })
           return
         }
+        setChangeInPost(true)
         setLoading(true)
         let result = await postLost(lostItemDetails)
         if (result) {
@@ -75,6 +75,7 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
           return
         }
         setLoading(true)
+        setChangeInPost(true)
         let result = await postFound(foundItemDetails)
         if (result) {
           setAlert({ msg: 'Posting found item Successful.', state: true })

@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { search } from "../api/searchApi";
-import { CaretRight } from "@phosphor-icons/react";
+import {
+  User,
+  CalendarBlankIcon,
+  MapPin,
+  CaretRight,
+  UserIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  CodeIcon,
+} from "@phosphor-icons/react";
+import defaultItem from "../assets/default-item.png";
 
 export default function Search({
   setAlert,
@@ -10,6 +21,7 @@ export default function Search({
 }) {
   const [loading, setLoading] = useState(false);
   const [SearchState, SetSearchState] = useState("founded_item");
+  const navigate = useNavigate();
 
   const [filterArr, setFilterArr] = useState([]);
   // const displayLost = retrievedData?.lostData ?? [];
@@ -29,6 +41,7 @@ export default function Search({
     date: "",
     location: "",
     role: "",
+    image: ""
   });
 
   const insertSearchDetails = (e) => {
@@ -45,6 +58,7 @@ export default function Search({
       date: "",
       location: "",
       role: "",
+      image: ""
     });
     if (SearchState === "founded_item") {
       setSearchDetails((prev) => ({ ...prev, role: "finder" }));
@@ -65,7 +79,7 @@ export default function Search({
     }
     try {
       setLoading(true);
-      let data = await search({ ...searchDetails });
+      let data = await search({ item_name: searchDetails.item_name, description: searchDetails.description, location: searchDetails.location, date: searchDetails.date, role: searchDetails.role });
       console.log("", data);
       data = data.map((ele) => ({
         item_name: ele["Item_Name"],
@@ -74,6 +88,7 @@ export default function Search({
         date: ele[
           `${SearchState === "lost_item" ? "Date_Lost" : "Date_Found"}`
         ],
+        image: ele['Image_Upload']
       }));
       setFilterArr(data);
     } catch (err) {
@@ -84,9 +99,9 @@ export default function Search({
   };
 
   useEffect(() => {
-    console.log('displayfound', displayFound)
-    console.log('displaylost', displayLost)
-  }, [filterArr, displayFound, displayLost])
+    console.log("displayfound", displayFound);
+    console.log("displaylost", displayLost);
+  }, [filterArr, displayFound, displayLost]);
 
   const clearSearch = () => {
     setSearchDetails({
@@ -95,10 +110,18 @@ export default function Search({
       date: "",
       location: "",
       role: "",
+      image: ""
     });
     setFilterArr([]);
     setChangeInPost(true);
   };
+
+  const formattedDate = (date) =>
+    new Date(`${date}T00:00:00`).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
   return (
     <>
@@ -108,7 +131,7 @@ export default function Search({
             className={`${SearchState == "founded_item" ? "bg-(--orange) text-(--pure-white)" : ""} finder h-full w-[320px] cursor-pointer transition-all duration-150 ease-in`}
             onClick={() => {
               SetSearchState("founded_item");
-              clearSearch()
+              clearSearch();
             }}
           >
             Search Found Items
@@ -118,7 +141,7 @@ export default function Search({
             className={`${SearchState == "lost_item" ? "bg-(--green) text-(--pure-white)" : ""} loser h-full w-[320px] cursor-pointer transition-all duration-150 ease-in`}
             onClick={() => {
               SetSearchState("lost_item");
-              clearSearch()
+              clearSearch();
             }}
           >
             Search Lost Items
@@ -174,9 +197,6 @@ export default function Search({
                 className="search-btn post-found bg-(--orange) hover:bg-(--orange-hover) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
                 onClick={clearSearch}
               >
-                {loading && (
-                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                )}
                 <span>Clear</span>
               </button>
             </div>
@@ -231,72 +251,78 @@ export default function Search({
                 className="search-btn post-found bg-(--green) hover:bg-(--green-hover) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
                 onClick={clearSearch}
               >
-                {loading && (
-                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                )}
                 <span>Clear</span>
               </button>
             </div>
           </div>
         )}
         {isLog && (
-          <div className="container flex max-h-[500px] w-[90%] self-center mx-auto mt-5 mb-5 rounded-2xl flex flex-col gap-4 overflow-auto">
+          <div className="container flex max-h-[500px] w-[90%] self-center mx-auto mt-5 mb-5 flex flex-col gap-4 overflow-auto py-3">
             {SearchState === "founded_item" &&
-              displayFound.map((ele, idx) => (
+              displayFound.map((item, idx) => (
                 <div
                   key={idx}
-                  className="relative box bg-(--input-1) px-3 py-2 rounded-2xl flex gap-4"
+                  className="relative box px-4 py-3 rounded-2xl flex gap-8 cursor-pointer transition-colors duration-200 hover:bg-gray-50 group"
+                  onClick={() => {
+                    navigate("/item-details", {
+                      state: { item: { ...item, type: "Found" } },
+                    });
+                  }}
                 >
-                  <div className="img h-full max-h-[200px] w-[150px] bg-amber-50 overflow-x-hidden shrink-0">
-                    <img className="text-[12px]" src="/" alt={ele.item_name} />
+                  <div className="img h-[100px] w-[150px] bg-white rounded-2xl overflow-x-hidden shrink-0 border-solid border-[1px] border-black overflow-hidden flex justify-center items-center">
+                    <img
+                      className="text-[12px] w-30 h-16 rounded-xl border border-gray-100 rotate-315"
+                      src={item.image || defaultItem}
+                      alt={item.item_name}
+                    />
                   </div>
+
                   <div className="details flex flex-col justify-center items-start max-w-[90%] overflow-hidden">
-                    <div className="item_name">
-                      <span className="font-bold">Name:</span> {ele.item_name}
+                    <div className="item_name font-bold text-[18px] text-black/80 mb-1.5">
+                      {item.item_name}
                     </div>
-                    <div className="description">
-                      <span className="font-bold">Description:</span>{" "}
-                      {ele.description}
+                    <div className="location flex items-center justify-center gap-2 text-slate-900">
+                      <MapPin size={16} weight="regular" /> {item.location}
                     </div>
-                    <div className="location">
-                      <span className="font-bold">Location:</span>{" "}
-                      {ele.location}
-                    </div>
-                    <div className="date">
-                      <span className="font-bold">Date:</span> {ele.date}
+                    <div className="date flex justify-center items-center gap-2 text-slate-900">
+                      <CalendarBlankIcon size={16} /> {formattedDate(item.date)}
                     </div>
                   </div>
-                  <div className="arrow self-end absolute cursor-pointer right-[10px] top-[10px]">
+                  <div className="text-gray-400 group-hover:text-black transition-colors duration-200 pr-2 absolute top-1/2 -translate-y-1/2 right-2">
                     <CaretRight size={24} weight="bold" />
                   </div>
                 </div>
               ))}
             {SearchState === "lost_item" &&
-              displayLost.map((ele, idx) => (
+              displayLost.map((item, idx) => (
                 <div
                   key={idx}
-                  className="relative box bg-(--input-1) px-3 py-2 rounded-2xl flex gap-4"
+                  className="relative box hover:bg-gray-50 px-4 py-3 rounded-2xl flex gap-8 cursor-pointer group"
+                  onClick={() => {
+                    navigate("/item-details", {
+                      state: { item: { ...item, type: "Lost" } },
+                    });
+                  }}
                 >
-                  <div className="img h-full max-h-[200px] bg-amber-50 overflow-x-hidden shrink-0">
-                    <img className="text-[12px]" src="/" alt={ele.item_name} />
+                  <div className="img h-[100px] w-[150px] bg-white rounded-2xl overflow-x-hidden shrink-0 border-solid border-[1px] border-black overflow-hidden flex justify-center items-center">
+                    <img
+                      className="text-[12px] w-30 h-16 rounded-xl border border-gray-100 rotate-315"
+                      src={item.image || defaultItem}
+                      alt={item.item_name}
+                    />
                   </div>
                   <div className="details flex flex-col justify-center items-start max-w-[90%] overflow-hidden">
-                    <div className="item_name">
-                      <span className="font-bold">Name:</span> {ele.item_name}
+                    <div className="item_name font-bold text-[18px] text-black/80 mb-1.5">
+                      {item.item_name}
                     </div>
-                    <div className="description">
-                      <span className="font-bold">Description:</span>{" "}
-                      {ele.description}
+                    <div className="location flex items-center justify-center gap-2 text-slate-900">
+                      <MapPin size={16} weight="regular" /> {item.location}
                     </div>
-                    <div className="location">
-                      <span className="font-bold">Location:</span>{" "}
-                      {ele.location}
-                    </div>
-                    <div className="date">
-                      <span className="font-bold">Date:</span> {ele.date}
+                    <div className="date flex justify-center items-center gap-2 text-slate-900">
+                      <CalendarBlankIcon size={16} /> {formattedDate(item.date)}
                     </div>
                   </div>
-                  <div className="arrow self-end absolute cursor-pointer right-[10px] top-[10px]">
+                  <div className="text-gray-400 group-hover:text-black transition-colors duration-200 pr-2 absolute top-1/2 -translate-y-1/2 right-2">
                     <CaretRight size={24} weight="bold" />
                   </div>
                 </div>

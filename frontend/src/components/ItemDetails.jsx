@@ -41,15 +41,16 @@ export default function ItemDetails() {
 
   const isLost = item.type?.toLowerCase() === "lost";
 
-  const itemRef = useRef(null)
 
   useEffect(() => {
-    itemRef.current.scrollTop = "0px"
-  }, [  ])
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-(--bg) px-4 py-8 mt-20" ref={itemRef}>
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-(--bg) px-4 py-8 mt-20">
+      
+
+      <div className="relative max-w-5xl mx-auto">
         {/* Back button */}
         <button
           onClick={() => navigate(-1)}
@@ -60,7 +61,9 @@ export default function ItemDetails() {
         </button>
 
         {/* Item details card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-8">
+        <div className="relative bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-8">
+          {!item.title && <div className={`duration-150 ease-in-out active:scale-95 cursor-pointer font-bold absolute claim ${item.type === 'Lost' ? 'bg-(--green)': 'bg-(--orange)'} right-5 bottom-5 px-4 py-2 rounded-xl text-white ${item.type === 'Lost' ? 'hover:bg-(--green-hover)': 'hover:bg-(--orange-hover)'}`}>Claim</div>}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Item image */}
             <div className="w-full h-64 sm:h-80 border border-gray-300 rounded-xl overflow-hidden flex items-center justify-center">
@@ -90,13 +93,13 @@ export default function ItemDetails() {
                 </span>
 
                 <h1 className="text-3xl font-bold text-gray-900 mt-3">
-                  {item.title}
+                  {item.title || item?.item_name}
                 </h1>
               </div>
 
               <div className="flex items-start gap-3 text-gray-600">
                 <div className="py-1">
-                  <CalendarBlank size={26}/>
+                  <CalendarBlank size={26} />
                 </div>
 
                 <div>
@@ -141,7 +144,6 @@ export default function ItemDetails() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

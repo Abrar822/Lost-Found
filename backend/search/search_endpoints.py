@@ -33,7 +33,7 @@ def display_lost_items(conn=Depends(db_connect), user_id=Depends(get_u_id)):
         user_ids = [row["U_id"] for row in user_ids]
         
 
-        query = """SELECT "Item_Name", "Description", "Location_Lost", "Date_Lost" FROM "Loser" WHERE "U_id" = ANY(%s) """
+        query = """SELECT "Item_Name", "Description", "Location_Lost", "Date_Lost", "Image_Upload" FROM "Loser" WHERE "U_id" = ANY(%s) """
         cur.execute(query, (user_ids, ))
         d = cur.fetchall()
         d = [
@@ -42,6 +42,7 @@ def display_lost_items(conn=Depends(db_connect), user_id=Depends(get_u_id)):
                 row["Description"],
                 row["Location_Lost"],
                 row["Date_Lost"],
+                row["Image_Upload"]
             ]
             for row in d
         ]
@@ -88,7 +89,7 @@ def display_found_items(conn=Depends(db_connect), user_id=Depends(get_u_id)):
         print('user_ids:', user_ids)
 
         print('getting found item details.')
-        query = """SELECT "Item_Name", "Description", "Location_Lost", "Date_Found" FROM "Finder" WHERE "U_id" = ANY(%s) """
+        query = """SELECT "Item_Name", "Description", "Location_Lost", "Date_Found", "Image_Upload" FROM "Finder" WHERE "U_id" = ANY(%s) """
 
         cur.execute(query, (user_ids, ))
         d = cur.fetchall()
@@ -98,6 +99,7 @@ def display_found_items(conn=Depends(db_connect), user_id=Depends(get_u_id)):
                 row["Description"],
                 row["Location_Lost"],
                 row["Date_Found"],
+                row["Image_Upload"]
             ]
             for row in d
         ]

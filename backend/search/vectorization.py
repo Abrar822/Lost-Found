@@ -42,7 +42,7 @@ def vectorize_found(data):
         return
 
     # found
-    names, descriptions, locations, dates = map(list, zip(*data["found_items_data"]))
+    names, descriptions, locations, dates, img_links = map(list, zip(*data["found_items_data"]))
     global tfidf_matrix_names_found, tfidf_matrix_descriptions_found, tfidf_matrix_locations_found
 
     tfidf_matrix_names_found = names_vectorizor_found.fit_transform(names)
@@ -57,7 +57,7 @@ def vectorize_lost(data):
         return
 
     # lost
-    names, descriptions, locations, dates = map(list, zip(*data["lost_items_data"]))
+    names, descriptions, locations, dates, img_links = map(list, zip(*data["lost_items_data"]))
     global tfidf_matrix_names_lost, tfidf_matrix_descriptions_lost, tfidf_matrix_locations_lost
 
     tfidf_matrix_names_lost = names_vectorizor_lost.fit_transform(names)
@@ -96,15 +96,16 @@ def calculate_similarity_lost(data, query):
     merged_result = [
         d[0] + [d[1]] for d in zip(data["lost_items_data"], similarity_scores)
     ]
-    merged_result.sort(key=lambda x: x[4], reverse=True)
+    merged_result.sort(key=lambda x: x[5], reverse=True)
 
-    result = list(filter(lambda x: x[4] > 0.15, merged_result))
+    result = list(filter(lambda x: x[5] > 0.15, merged_result))
     result = [
         {
             "Item_Name": d[0],
             "Description": d[1],
             "Location_Lost": d[2],
             "Date_Lost": d[3],
+            "Image_Upload": d[4]
         }
         for d in result
     ]
@@ -143,15 +144,16 @@ def calculate_similarity_found(data, query):
     merged_result = [
         d[0] + [d[1]] for d in zip(data["found_items_data"], similarity_scores)
     ]
-    merged_result.sort(key=lambda x: x[4], reverse=True)
+    merged_result.sort(key=lambda x: x[5], reverse=True)
 
-    result = list(filter(lambda x: x[4] > 0.15, merged_result))
+    result = list(filter(lambda x: x[5] > 0.15, merged_result))
     result = [
         {
             "Item_Name": d[0],
             "Description": d[1],
             "Location_Lost": d[2],
             "Date_Found": d[3],
+            "Image_Upload": d[4]
         }
         for d in result
     ]
@@ -167,7 +169,7 @@ def retrieve_items():
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
         cur.execute("""
-            SELECT "Item_Name", "Description", "Location_Lost", "Date_Lost"
+            SELECT "Item_Name", "Description", "Location_Lost", "Date_Lost", "Image_Upload"
             FROM "Loser"
         """)
         lost_items = cur.fetchall()
@@ -177,13 +179,14 @@ def retrieve_items():
                 row["Item_Name"],
                 row["Description"],
                 row["Location_Lost"],
-                row["Date_Lost"]
+                row["Date_Lost"],
+                row["Image_Upload"]
             ]
             for row in lost_items
         ]
 
         cur.execute("""
-            SELECT "Item_Name", "Description", "Location_Lost", "Date_Found"
+            SELECT "Item_Name", "Description", "Location_Lost", "Date_Found", "Image_Upload"
             FROM "Finder"
         """)
         found_items = cur.fetchall()
@@ -193,7 +196,8 @@ def retrieve_items():
                 row["Item_Name"],
                 row["Description"],
                 row["Location_Lost"],
-                row["Date_Found"]
+                row["Date_Found"],
+                row["Image_Upload"]
             ]
             for row in found_items
         ]

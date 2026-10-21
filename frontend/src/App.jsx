@@ -189,12 +189,14 @@ function App() {
           location: ele[2],
           description: ele[1],
           date: ele[3],
+          image: ele[4]
         }));
         foundData = foundData.map((ele) => ({
           item_name: ele[0],
           location: ele[2],
           description: ele[1],
           date: ele[3],
+          image: ele[4]
         }));
 
         setRetrivedData({

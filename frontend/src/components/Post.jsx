@@ -42,15 +42,14 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
     event.preventDefault();
     if (activePost === "lost") {
       try {
+        setLoading(true)
         if (lostItemDetails.item_name === '' || lostItemDetails.description === '' || lostItemDetails.date === '' || lostItemDetails.location === '') {
           setAlert({ msg: 'All the details must be filled other than Image.', state: true })
           return
         }
-        setChangeInPost(true)
-        setLoading(true)
         let result = await postLost(lostItemDetails)
         if (result) {
-          setAlert({ msg: 'Posting lost item Successful.', state: true })
+          setChangeInPost(true)
           setLostItemDetails({
             item_name: "",
             description: "",
@@ -59,6 +58,7 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
             image: null,
           })
         }
+        setAlert({ msg: 'Posting lost item Successful.', state: true })
       }
       catch (err) {
         setAlert({ msg: 'Posting Lost Item Failed. ' + String(err.message), state: true })
@@ -69,15 +69,15 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
     }
     else {
       try {
+        setLoading(true)
         if (foundItemDetails.item_name === '' || foundItemDetails.description === '' || foundItemDetails.date === '' || foundItemDetails.location === '') {
           setAlert({ msg: 'All the details must be filled other than Image.', state: true })
           return
         }
-        setLoading(true)
-        setChangeInPost(true)
         let result = await postFound(foundItemDetails)
         if (result) {
           setAlert({ msg: 'Posting found item Successful.', state: true })
+          setChangeInPost(true)
           setFoundItemDetails({
             item_name: "",
             description: "",
@@ -86,7 +86,6 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
             image: null,
           });
         }
-        setLoading(false)
       }
       catch (err) {
         setAlert({ msg: 'Posting Found Item Failed. ' + String(err.message), state: true })

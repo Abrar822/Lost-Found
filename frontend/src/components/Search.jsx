@@ -102,10 +102,10 @@ export default function Search({
 
   return (
     <>
-      <div className="search-container bg-(--pure-white) max-w-[750px] mx-auto rounded-2xl mb-10 py-2 shadow-lg">
+      <div className="search-container bg-(--pure-white) max-w-[1170px] mx-auto rounded-2xl mb-10 py-2 shadow-lg">
         <div className="title overflow-hidden mx-auto w-[50%] rounded-2xl h-[40px] bg-(--navbar) text-(--btn-black) font-bold flex justify-between items-center my-3">
           <button
-            className={`${SearchState == "founded_item" ? "bg-(--orange) text-(--pure-white)" : ""} finder h-full w-[230px] cursor-pointer transition-all duration-150 ease-in`}
+            className={`${SearchState == "founded_item" ? "bg-(--orange) text-(--pure-white)" : ""} finder h-full w-[320px] cursor-pointer transition-all duration-150 ease-in`}
             onClick={() => {
               SetSearchState("founded_item");
               clearSearch()
@@ -115,7 +115,7 @@ export default function Search({
           </button>
           <div className="slash bg-(--pure-white) w-[1px] h-full"></div>
           <button
-            className={`${SearchState == "lost_item" ? "bg-(--green) text-(--pure-white)" : ""} loser h-full w-[230px] cursor-pointer transition-all duration-150 ease-in`}
+            className={`${SearchState == "lost_item" ? "bg-(--green) text-(--pure-white)" : ""} loser h-full w-[320px] cursor-pointer transition-all duration-150 ease-in`}
             onClick={() => {
               SetSearchState("lost_item");
               clearSearch()
@@ -162,7 +162,7 @@ export default function Search({
             ></textarea>
             <div className="btn-container w-[90%] mx-auto flex justify-center items-center gap-4">
               <button
-                className="search-btn post-found bg-(--orange) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
+                className="search-btn post-found bg-(--orange) hover:bg-(--orange-hover) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
                 onClick={handleSearch}
               >
                 {loading && (
@@ -171,7 +171,7 @@ export default function Search({
                 <span>Search</span>
               </button>
               <button
-                className="search-btn post-found bg-(--orange) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
+                className="search-btn post-found bg-(--orange) hover:bg-(--orange-hover) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
                 onClick={clearSearch}
               >
                 {loading && (
@@ -219,7 +219,7 @@ export default function Search({
             ></textarea>
             <div className="btn-container w-[90%] mx-auto flex justify-center items-center gap-4">
               <button
-                className="search-btn post-found bg-(--green) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
+                className="search-btn post-found bg-(--green) hover:bg-(--green-hover) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
                 onClick={handleSearch}
               >
                 {loading && (
@@ -228,7 +228,7 @@ export default function Search({
                 <span>Search</span>
               </button>
               <button
-                className="search-btn post-found bg-(--green) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
+                className="search-btn post-found bg-(--green) hover:bg-(--green-hover) text-(--pure-white) p-1.5 rounded-lg m-1 cursor-pointer transition-all duration-150 ease-in-out active:scale-95 mt-2 self-center w-[90%] flex justify-center items-center gap-6"
                 onClick={clearSearch}
               >
                 {loading && (
@@ -277,7 +277,7 @@ export default function Search({
                   key={idx}
                   className="relative box bg-(--input-1) px-3 py-2 rounded-2xl flex gap-4"
                 >
-                  <div className="img h-full max-h-[200px] w-[150px] bg-amber-50 overflow-x-hidden shrink-0">
+                  <div className="img h-full max-h-[200px] bg-amber-50 overflow-x-hidden shrink-0">
                     <img className="text-[12px]" src="/" alt={ele.item_name} />
                   </div>
                   <div className="details flex flex-col justify-center items-start max-w-[90%] overflow-hidden">

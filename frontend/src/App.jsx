@@ -73,7 +73,7 @@ function App() {
   );
 
   const [activePost, setActivePost] = useState("lost");
-  const [changeInPost, setChangeInPost] = useState(false)
+  const [changeInPost, setChangeInPost] = useState(false);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -167,41 +167,51 @@ function App() {
     }
   }, []);
 
-
   const [retrievedData, setRetrivedData] = useState({
-    foundData: [], lostData: []
-  })
+    foundData: [],
+    lostData: [],
+  });
   useEffect(() => {
-    console.log('entered')
-    if(!isLog) return;
-    // if(!changeInPost) return
-    console.log('started')
+    console.log("entered");
+    if (!isLog) return;
+    console.log("started");
     const exe = async () => {
-      let [lostData, foundData] = await Promise.all([
-        getLostData(),
-        getFoundData(),
-      ]);
-      console.log('fetched')
-      console.log(lostData, foundData)
-      lostData = lostData.map(ele => ({item_name: ele[0], location: ele[2], description: ele[1], date: ele[3]}))
-      foundData = foundData.map(ele => ({item_name: ele[0], location: ele[2], description: ele[1], date: ele[3]}))
-      
-      setRetrivedData({
-        foundData: [...foundData], lostData: [...lostData]
-      })
-      console.log(retrievedData)
-      console.log('ended')
-    }
-    try {
-      setLoading(true)
-      exe()
-    } catch(err) {
-      setAlert({msg: 'Failed to retrieve the items details.', state: true})
-    } finally {
-      setLoading(false)
-      setChangeInPost(false)
-    }
-  }, [isLog, changeInPost])
+      try {
+        setLoading(true);
+        let [lostData, foundData] = await Promise.all([
+          getLostData(),
+          getFoundData(),
+        ]);
+        console.log("fetched");
+        console.log(lostData, foundData);
+        lostData = lostData.map((ele) => ({
+          item_name: ele[0],
+          location: ele[2],
+          description: ele[1],
+          date: ele[3],
+        }));
+        foundData = foundData.map((ele) => ({
+          item_name: ele[0],
+          location: ele[2],
+          description: ele[1],
+          date: ele[3],
+        }));
+
+        setRetrivedData({
+          foundData: [...foundData],
+          lostData: [...lostData],
+        });
+        console.log(retrievedData);
+        console.log("ended");
+      } catch (err) {
+        setAlert({ msg: "Failed to retrieve the items details.", state: true });
+      } finally {
+        setLoading(false);
+        setChangeInPost(false);
+      }
+    };
+    exe();
+  }, [isLog, changeInPost]);
   useEffect(() => {
     const loadUserData = async () => {
       try {

@@ -10,11 +10,11 @@ import Profile from "./components/Profile";
 import PageNotFound from "./components/PageNotFound";
 import Alert from "./components/Alert";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { getUserDetails } from "./api/ProfileApi";
 import { useUserContext } from "./contexts/UserRoleContext";
 import { getOrganizationDetails, getUsers } from "./api/AdminApi";
 import ForgotPassword from "./components/ForgotPassword";
 import ItemDetails from "./components/ItemDetails";
+import { getUserDetails, getLostItems, getFoundItems } from "./api/ProfileApi";
 
 // HttpOnly + Secure + SameSite cookie
 // what is it
@@ -40,6 +40,10 @@ function App() {
     phone_number: "",
     code: "",
   });
+  const [lostItems, setLostItems] = useState([]);
+  const [foundItems, setFoundItems] = useState([]);
+  const [itemsLoading, setItemsLoading] = useState(false);
+  const [itemsError, setItemsError] = useState("");
   const [organization, setOrganization] = useState({
     name: "",
     code: "",
@@ -88,6 +92,25 @@ function App() {
         code: data.Code,
       });
     };
+    const loadItems = async () => {
+      setItemsLoading(true);
+      setItemsError("");
+
+      try {
+        const [lost, found] = await Promise.all([
+          getLostItems(),
+          getFoundItems(),
+        ]);
+
+        setLostItems(Array.isArray(lost) ? lost : []);
+        setFoundItems(Array.isArray(found) ? found : []);
+      } catch (err) {
+        console.error("Error loading items:", err);
+        setItemsError(err.message || "Failed to load items.");
+      } finally {
+        setItemsLoading(false);
+      }
+    };
     const organizationDetails = async () => {
       const data = await getOrganizationDetails();
       setOrganization({
@@ -109,6 +132,7 @@ function App() {
     };
     if (isLog && userRole === "user") {
       userDetails();
+      loadItems();
     }
     if (isLog && userRole === "admin") {
       organizationDetails();
@@ -140,6 +164,77 @@ function App() {
       setIsLog(false);
     }
   }, []);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const data = await getUserDetails();
+
+        setUserData({
+          name: data.Name,
+          email: data.Email,
+          phone_number: data.Phone_Number,
+          code: data.Code,
+        });
+      } catch (err) {
+        console.error("User details error:", err);
+      }
+    };
+
+    const loadItems = async () => {
+      setItemsLoading(true);
+      setItemsError("");
+
+      try {
+        const [lost, found] = await Promise.all([
+          getLostItems(),
+          getFoundItems(),
+        ]);
+
+        setLostItems(Array.isArray(lost) ? lost : []);
+        setFoundItems(Array.isArray(found) ? found : []);
+      } catch (err) {
+        console.error("Items loading error:", err);
+        setItemsError(err.message || "Failed to load items.");
+      } finally {
+        setItemsLoading(false);
+      }
+    };
+
+    const loadOrganizationData = async () => {
+      try {
+        const data = await getOrganizationDetails();
+
+        setOrganization({
+          name: data.Name,
+          code: data.Code,
+          email: data.Email,
+          users: data.Users,
+        });
+
+        const usersData = await getUsers();
+        setUsers(
+          usersData.map((user) => ({
+            u_id: user.U_id,
+            name: user.Name,
+            email: user.Email,
+            phone: user.Phone_Number,
+          })),
+        );
+      } catch (err) {
+        console.error("Admin data loading error:", err);
+      }
+    };
+
+    if (!isLog || !userRole) return;
+
+    if (userRole === "user") {
+      loadUserData();
+      loadItems();
+    } else if (userRole === "admin") {
+      loadOrganizationData();
+    }
+  }, [isLog, userRole]);
 
   return (
     <>
@@ -281,7 +376,14 @@ function App() {
                 setAlert={setAlert}
                 setUserAuth={setUserAuth}
               >
-                <Profile userData={userData} setUserData={setUserData} />
+                <Profile
+                  userData={userData}
+                  setUserData={setUserData}
+                  lostItems={lostItems}
+                  foundItems={foundItems}
+                  itemsLoading={itemsLoading}
+                  itemsError={itemsError}
+                />
               </ProtectedRoute>
             }
           ></Route>

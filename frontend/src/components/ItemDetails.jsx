@@ -98,7 +98,10 @@ export default function ItemDetails() {
               </div>
 
               <div className="flex items-start gap-3 text-gray-600">
-                <CalendarBlank size={22} />
+                <div className="py-1">
+                  <CalendarBlank size={26} />
+                </div>
+                
                 <div>
                   <p className="font-semibold text-gray-800">
                     Date {isLost ? "Lost" : "Found"}
@@ -108,7 +111,10 @@ export default function ItemDetails() {
               </div>
 
               <div className="flex items-start gap-3 text-gray-600">
-                <MapPin size={22} />
+                <div className="py-1">
+                  <MapPin size={26} />
+                </div>
+                
                 <div>
                   <p className="font-semibold text-gray-800">
                     Location
@@ -118,7 +124,10 @@ export default function ItemDetails() {
               </div>
 
               <div className="flex items-start gap-3 text-gray-600">
-                <FileText size={22} />
+                <div className="py-1">
+                  <FileText size={26} />
+                </div>
+                
                 <div>
                   <p className="font-semibold text-gray-800">
                     Description
@@ -130,7 +139,10 @@ export default function ItemDetails() {
               </div>
 
               <div className="flex items-start gap-3 text-gray-600">
-                <Phone size={22} />
+                <div className="py-1">
+                  <Phone size={26} />
+                </div>
+                
                 <div>
                   <p className="font-semibold text-gray-800">
                     Contact

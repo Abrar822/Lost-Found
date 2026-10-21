@@ -140,10 +140,11 @@ def get_lost_items(
             FROM "Loser" AS l
             LEFT JOIN "User" AS u
                 ON l."U_id" = u."U_id"
+            WHERE l."U_id" = %s
             ORDER BY
                 l."Date_Lost" DESC NULLS LAST,
                 l."L_id" DESC
-        """)
+        """,(user_id,),)
 
         return cursor.fetchall()
 
@@ -181,10 +182,11 @@ def get_found_items(
             FROM "Finder" AS f
             LEFT JOIN "User" AS u
                 ON f."U_id" = u."U_id"
+            WHERE f."U_id" = %s
             ORDER BY
                 f."Date_Found" DESC NULLS LAST,
                 f."F_id" DESC
-        """)
+        """,(user_id,),)
 
         return cursor.fetchall()
 

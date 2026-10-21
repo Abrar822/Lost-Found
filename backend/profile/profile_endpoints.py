@@ -164,7 +164,6 @@ def get_found_items(
 
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        print("Authenticated user ID:", user_id)
         cursor.execute(
             """
             SELECT

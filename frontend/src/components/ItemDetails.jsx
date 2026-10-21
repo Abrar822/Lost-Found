@@ -46,7 +46,7 @@ export default function ItemDetails() {
   const isLost = item.type?.toLowerCase() === "lost";
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8 mt-15">
+    <div className="min-h-screen bg-(--bg) px-4 py-8 mt-15">
       <div className="max-w-5xl mx-auto">
 
         {/* Back button */}

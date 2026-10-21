@@ -90,7 +90,7 @@ export default function AdminDashboard({ organization, setOrganization, users, s
                         Manage your organization and its registered members.
                     </div>
                 </div>
-                <div className="rounded-lg bg-white p-4 shadow-sm flex gap-6">
+                <div className="rounded-lg bg-white p-4 shadow-lg flex gap-6">
                     <div>
                         <BuildingOfficeIcon size={80} className="rounded-full text-(--orange) bg-orange-100 p-2" />
                     </div>
@@ -99,10 +99,7 @@ export default function AdminDashboard({ organization, setOrganization, users, s
                             <div className="font-bold text-2xl">
                                 {organization.name}
                             </div>
-                            <button className="flex items-center gap-2 rounded-lg bg-(--green) text-white py-2 px-3 transition-all duration-200 ease-in-out
-                        hover:brightness-90 hover:shadow-md
-                        active:scale-[0.98]
-                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--green)
+                            <button className="flex items-center gap-2 rounded-lg bg-(--green) text-white py-2 px-3 transition-all hover:bg-(--green-hover)
                         cursor-pointer" onClick={() => setIsEdit(true)}>
                                 <PencilSimpleIcon size={20} />
                                 Edit Organization
@@ -121,7 +118,7 @@ export default function AdminDashboard({ organization, setOrganization, users, s
                                 </div>
                             </div>
                             <div className="flex items-center gap-4 border-l border-gray-300 px-6">
-                                <EnvelopeIcon size={40} className="rounded-lg text-(--orange) bg-orange-100 p-2" />
+                                <EnvelopeIcon size={40} className="rounded-lg text-(--orange) bg-orange-100 p-2"/>
                                 <div>
                                     <div className="text-sm text-slate-700">
                                         Email Address
@@ -145,7 +142,7 @@ export default function AdminDashboard({ organization, setOrganization, users, s
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col rounded-lg bg-white p-4 shadow-sm gap-4">
+                <div className="flex flex-col rounded-lg bg-white p-4 shadow-lg gap-4">
                     <div>
                         <div className="font-bold text-2xl">
                             Registered Users

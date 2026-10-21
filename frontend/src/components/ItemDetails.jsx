@@ -7,6 +7,7 @@ import {
   FileText,
 } from "@phosphor-icons/react";
 import defaultItem from "../assets/default-item.png";
+import { useEffect, useRef } from "react";
 
 export default function ItemDetails() {
   const navigate = useNavigate();
@@ -40,13 +41,19 @@ export default function ItemDetails() {
 
   const isLost = item.type?.toLowerCase() === "lost";
 
+  const itemRef = useRef(null)
+
+  useEffect(() => {
+    itemRef.current.scrollTop = "0px"
+  }, [  ])
+
   return (
-    <div className="min-h-screen bg-(--bg) px-4 py-8 mt-15">
+    <div className="min-h-screen bg-(--bg) px-4 py-8 mt-20" ref={itemRef}>
       <div className="max-w-5xl mx-auto">
         {/* Back button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 mb-6 text-gray-600 hover:text-black"
+          className="flex items-center gap-2 mb-6 font-semibold hover:text-gray-600 cursor-pointer"
         >
           <ArrowLeft size={20} />
           Back to Profile
@@ -75,8 +82,8 @@ export default function ItemDetails() {
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
                     isLost
-                      ? "bg-red-100 text-red-600"
-                      : "bg-green-100 text-green-600"
+                      ? "bg-green-100 text-(--green)"
+                      : "bg-orange-100 text-(--orange)"
                   }`}
                 >
                   {item.type}
@@ -89,7 +96,7 @@ export default function ItemDetails() {
 
               <div className="flex items-start gap-3 text-gray-600">
                 <div className="py-1">
-                  <CalendarBlank size={26} />
+                  <CalendarBlank size={26}/>
                 </div>
 
                 <div>
@@ -135,11 +142,6 @@ export default function ItemDetails() {
             </div>
           </div>
 
-          <div className="mt-8 p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-900">
-            {isLost
-              ? "If you have found this item, please contact the owner using the details above."
-              : "If this item belongs to you, please contact the person who reported it found."}
-          </div>
         </div>
       </div>
     </div>

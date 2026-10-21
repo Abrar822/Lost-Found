@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import defaultItem from "../assets/default-item.png";
 import {
   User,
-  CalendarBlank,
+  CalendarBlankIcon,
   MapPin,
   CaretRight,
   UserIcon,
@@ -115,13 +115,13 @@ export default function Profile({
         />
       )}
 
-      <div className="min-h-screen flex justify-start py-10 px-10 mt-15 bg-(--navbar)">
-        <div className="w-full max-w rounded-2xl px-8 py-2">
+      <div className="min-h-screen flex justify-start py-10 px-10 mt-15 bg-(--bg  )">
+        <div className="w-full max-w rounded-2xl px-8 py-2 mx-20">
           {/* Header */}
           <h1 className="text-4xl font-bold text-[#1e293b] mb-8">Profile</h1>
 
           {/* User Info Section */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12 bg-white p-5 rounded-lg shadow-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12 bg-white p-5 rounded-2xl shadow-lg">
             <div className="flex items-center gap-6">
               <div
                 onClick={() => setActiveTab("lost")}
@@ -133,22 +133,22 @@ export default function Profile({
                 <User size={48} weight="fill" />
               </div>
               <div>
-                <h2 className="text-2xl font-semibold text-gray-900">
+                <h2 className="text-2xl font-bold">
                   {userData.name}
                 </h2>
-                <p className="text-gray-500 mt-1 text-sm sm:text-base">
+                <p className="text-slate-700 mt-1 text-sm sm:text-base">
                   {userData.email}
                 </p>
               </div>
             </div>
             <button
               onClick={() => setEdit(true)}
-              className={`border-2 border-indigo-100 text-[#25201B] font-bold 
-          px-6 py-2 rounded-lg transition-colors duration-200 bg-[#FAF7F0] cursor-pointer
+              className={`border-2 border-indigo-100 font-bold 
+          px-6 py-2 rounded-lg transition-colors duration-200 cursor-pointer
           ${
             activeTab === "found"
-              ? "hover:bg-[#B47B27] hover:text-(--pure-white)"
-              : "hover:bg-(--green) hover:text-(--pure-white)"
+              ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
+              : "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
           }`}
             >
               Edit Profile
@@ -156,8 +156,8 @@ export default function Profile({
           </div>
 
           {/* My Posts Section */}
-          <div className="bg-white p-5 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">My Posts</h2>
+          <div className="bg-white p-5 rounded-2xl shadow-lg">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Posts</h2>
 
             {/* Tabs */}
             <div className="flex border-b border-gray-200 mb-6">
@@ -222,22 +222,22 @@ export default function Profile({
                       {/* Item Details */}
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-gray-900 text-base sm:text-lg">
+                          <h3 className="font-semibold text-gray-900 text-xl sm:text-lg">
                             {item.title}
                           </h3>
                           <span
                             className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md ${
                               item.type === "Lost"
-                                ? "bg-red-100 text-red-500"
-                                : "bg-green-100 text-green-600"
+                                ? "bg-green-100 text-(--green)"
+                                : "bg-orange-100 text-(--orange)"
                             }`}
                           >
                             {item.type}
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-2 text-gray-400 text-xs sm:text-sm mt-1">
-                          <CalendarBlank size={16} weight="regular" />
+                        <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm mt-1">
+                          <CalendarBlankIcon size={16} />
                           <span>
                             {item.date
                               ? new Date(
@@ -251,7 +251,7 @@ export default function Profile({
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-2 text-gray-400 text-xs sm:text-sm">
+                        <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm">
                           <MapPin size={16} weight="regular" />
                           <span>{item.location}</span>
                         </div>
@@ -292,7 +292,7 @@ export default function Profile({
                 height="100"
                 viewBox="0 0 200 200"
                 xmlns="http://www.w3.org/2000/svg"
-                className="rounded-full"
+                className={`rounded-full ${activeTab === "lost" ? "bg-[linear-gradient(90deg,#255A4F_0%,#2F6F62_100%)]" : ""}`}
               >
                 <defs>
                   {/* Orange Gradient */}
@@ -310,7 +310,7 @@ export default function Profile({
                 </defs>
 
                 {/* Background Circle */}
-                <circle cx="100" cy="100" r="98" fill="url(#orangeGradient)" />
+                <circle cx="100" cy="100" r="98" fill={`${activeTab==='lost' ? "url()" : "url(#orangeGradient)" }`} />
 
                 {/* User Head */}
                 <circle
@@ -345,7 +345,7 @@ export default function Profile({
             className="flex flex-col gap-4 ml-5.5"
           >
             <div className="flex border rounded-lg px-2 py-1 w-85">
-              <UserIcon size={24} className="text-(--orange)" />
+              <UserIcon size={24} className={`${activeTab === "lost" ? "text-(--green)" : "text-(--orange)"}`} />
 
               <input
                 type="text"
@@ -358,7 +358,7 @@ export default function Profile({
               />
             </div>
             <div className="flex border rounded-lg px-2 py-1 w-85">
-              <PhoneIcon size={24} className="text-(--orange)" />
+              <PhoneIcon size={24} className={`${activeTab === "lost" ? "text-(--green)" : "text-(--orange)"}`} />
 
               <input
                 type="tel"
@@ -372,7 +372,7 @@ export default function Profile({
               />
             </div>
             <div className="flex border rounded-lg px-2 py-1 w-85">
-              <EnvelopeIcon size={24} className="text-(--orange)" />
+              <EnvelopeIcon size={24} className={`${activeTab === "lost" ? "text-(--green)" : "text-(--orange)"}`} />
 
               <input
                 type="text"
@@ -385,7 +385,7 @@ export default function Profile({
               />
             </div>
             <div className="flex border rounded-lg px-2 py-1 w-85">
-              <CodeIcon size={24} className="text-(--orange)" />
+              <CodeIcon size={24} className={`${activeTab === "lost" ? "text-(--green)" : "text-(--orange)"}`} />
 
               <input
                 type="text"
@@ -407,13 +407,13 @@ export default function Profile({
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center justify-center font-semibold
+                className={`flex items-center justify-center font-semibold
       border rounded-lg w-30 h-10
       disabled:opacity-60 disabled:cursor-not-allowed
       hover:cursor-pointer
-      bg-[linear-gradient(90deg,#A9701E_0%,#C2872E_100%)]
+      
       text-white transition-all duration-300
-      hover:brightness-110"
+      ${activeTab === "lost" ? "bg-(--green) hover:bg-(--green-hover)" : "bg-(--orange) hover:bg-(--orange-hover)"}`}
               >
                 {saving ? "Saving..." : "Save"}
               </button>

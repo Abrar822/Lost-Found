@@ -7,7 +7,6 @@ from typing import List
 
 profile_endpoints = APIRouter()
 
-
 @profile_endpoints.get(
     "/user", response_model=UserDetails, status_code=status.HTTP_200_OK
 )

@@ -20,6 +20,7 @@ import { getUserDetails, getLostItems, getFoundItems } from "./api/ProfileApi";
 // HttpOnly + Secure + SameSite cookie
 // what is it
 function App() {
+  const [username, setUsername] = useState('')
   const { userRole, setUserRole } = useUserContext();
   const [loading, setLoading] = useState(false);
   const [forgotPwd, setForgotPwd] = useState({ state: false, role: "" });
@@ -97,6 +98,7 @@ function App() {
         phone_number: data.Phone_Number,
         code: data.Code,
       });
+      setUsername(data.Name)
     };
 
     // fetching the lost and found reported items
@@ -129,6 +131,7 @@ function App() {
         email: data.Email,
         users: data.Users,
       });
+      setUsername(data.Name)
     };
     const getUsersDetails = async () => {
       const data = await getUsers();
@@ -383,7 +386,7 @@ function App() {
           setIsLog={setIsLog}
           setAlert={setAlert}
           userRole={userRole}
-          userData={userData}
+          username={username}
         />
 
         <Routes>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CloudArrowUpIcon } from "@phosphor-icons/react";
 import { postLost, postFound } from "../api/PostApi";
@@ -38,6 +38,11 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
     }));
   }
 
+  useEffect(() => {
+    console.log(lostItemDetails, foundItemDetails)
+    console.log(lostItemDetails.image)
+  }, [lostItemDetails, foundItemDetails])
+
   async function onSubmit(event) {
     event.preventDefault();
     if (activePost === "lost") {
@@ -47,7 +52,18 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
           setAlert({ msg: 'All the details must be filled other than Image.', state: true })
           return
         }
-        let result = await postLost(lostItemDetails)
+
+        let formData = new FormData()
+        formData.append('item_name', lostItemDetails.item_name)
+        formData.append('description', lostItemDetails.description)
+        formData.append('location', lostItemDetails.location)
+        formData.append('date', lostItemDetails.date)
+        if(lostItemDetails.image) {
+          formData.append('image', lostItemDetails.image)
+        }
+
+        // let result = await postLost(lostItemDetails)
+        let result = await postLost(formData)
         if (result) {
           setChangeInPost(true)
           setLostItemDetails({
@@ -199,7 +215,7 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
                 type="file"
                 name="image"
                 id="image"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={onLostChange}
                 className="hidden"
               />
@@ -213,7 +229,7 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
                 <span>
                   {lostItemDetails.image
                     ? lostItemDetails.image.name
-                    : "Click to upload lost item image"}
+                    : "Click to upload lost item image (.jpeg, .png., .webp)"}
                 </span>
               </label>
             </div>
@@ -311,7 +327,7 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
                 <span>
                   {foundItemDetails.image
                     ? foundItemDetails.image.name
-                    : "Click to upload found item image"}
+                    : "Click to upload found item image (.jpeg, .png., .webp)"}
                 </span>
               </label>
             </div>

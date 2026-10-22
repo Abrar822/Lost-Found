@@ -10,16 +10,17 @@ export async function postLost(item) {
     let response = await fetch('http://127.0.0.1:8000/post_lost', {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+            // "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-            item_name: item.item_name,
-            description: item.description,
-            date: item.date,
-            location: item.location,
-            image: item.image?.name
-        })
+        // body: JSON.stringify({
+        //     item_name: item.item_name,
+        //     description: item.description,
+        //     date: item.date,
+        //     location: item.location,
+        //     image: item.image?.name
+        // })
+        body: item
     })
 
     let result = await response.json()

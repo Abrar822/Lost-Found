@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 
-export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRole, userData }) {
+export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRole, username }) {
   const navigate = useNavigate();
   const location = useLocation();
   const logOut = () => {
@@ -94,7 +94,7 @@ export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRol
                   navigate("/profile");
                 }}
               >
-                <div className={`${userRole === 'admin' ? '': 'cursor-pointer'} flex justify-center items-center text-[20px] initial w-[35px] h-[35px] rounded-full self-center text-white font-bold ${userRole === 'admin' ? 'bg-(--green)': ''} ${userRole === 'user' ? 'bg-(--orange)': ''}`}>{userData.name[0]?.toUpperCase()}</div>
+                <div className={`${userRole === 'admin' ? '': 'cursor-pointer'} flex justify-center items-center text-[20px] initial w-[40px] h-[40px] rounded-full self-center text-white font-bold ${userRole === 'admin' ? 'bg-(--green)': ''} ${userRole === 'user' ? 'bg-(--orange)': ''}`}>{username.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}</div>
               </li>
             )}
           </ul>

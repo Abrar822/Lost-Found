@@ -3,8 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { CloudArrowUpIcon } from "@phosphor-icons/react";
 import { postLost, postFound } from "../api/PostApi";
 
-export default function Post({ setActivePost, activePost, loading, setLoading, setAlert, setChangeInPost }) {
-
+export default function Post({
+  setActivePost,
+  activePost,
+  loading,
+  setLoading,
+  setAlert,
+  setChangeInPost,
+}) {
   const [lostItemDetails, setLostItemDetails] = useState({
     item_name: "",
     description: "",
@@ -39,61 +45,85 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
   }
 
   useEffect(() => {
-    console.log(lostItemDetails, foundItemDetails)
-    console.log(lostItemDetails.image)
-  }, [lostItemDetails, foundItemDetails])
+    console.log(lostItemDetails, foundItemDetails);
+    console.log(lostItemDetails.image);
+  }, [lostItemDetails, foundItemDetails]);
 
   async function onSubmit(event) {
     event.preventDefault();
     if (activePost === "lost") {
       try {
-        setLoading(true)
-        if (lostItemDetails.item_name === '' || lostItemDetails.description === '' || lostItemDetails.date === '' || lostItemDetails.location === '') {
-          setAlert({ msg: 'All the details must be filled other than Image.', state: true })
-          return
+        setLoading(true);
+        if (
+          lostItemDetails.item_name === "" ||
+          lostItemDetails.description === "" ||
+          lostItemDetails.date === "" ||
+          lostItemDetails.location === ""
+        ) {
+          setAlert({
+            msg: "All the details must be filled other than Image.",
+            state: true,
+          });
+          return;
         }
 
-        let formData = new FormData()
-        formData.append('item_name', lostItemDetails.item_name)
-        formData.append('description', lostItemDetails.description)
-        formData.append('location', lostItemDetails.location)
-        formData.append('date', lostItemDetails.date)
-        if(lostItemDetails.image) {
-          formData.append('image', lostItemDetails.image)
+        let formData = new FormData();
+        formData.append("item_name", lostItemDetails.item_name);
+        formData.append("description", lostItemDetails.description);
+        formData.append("location", lostItemDetails.location);
+        formData.append("date", lostItemDetails.date);
+        if (lostItemDetails.image) {
+          formData.append("image", lostItemDetails.image);
         }
 
-        // let result = await postLost(lostItemDetails)
-        let result = await postLost(formData)
+        let result = await postLost(formData);
         if (result) {
-          setChangeInPost(true)
+          setChangeInPost(true);
           setLostItemDetails({
             item_name: "",
             description: "",
             date: "",
             location: "",
             image: null,
-          })
+          });
         }
-        setAlert({ msg: 'Posting lost item Successful.', state: true })
+        setAlert({ msg: "Posting lost item Successful.", state: true });
+      } catch (err) {
+        setAlert({
+          msg: "Posting Lost Item Failed. " + String(err.message),
+          state: true,
+        });
+      } finally {
+        setLoading(false);
       }
-      catch (err) {
-        setAlert({ msg: 'Posting Lost Item Failed. ' + String(err.message), state: true })
-      }
-      finally {
-        setLoading(false)
-      }
-    }
-    else {
+    } else {
       try {
-        setLoading(true)
-        if (foundItemDetails.item_name === '' || foundItemDetails.description === '' || foundItemDetails.date === '' || foundItemDetails.location === '') {
-          setAlert({ msg: 'All the details must be filled other than Image.', state: true })
-          return
+        setLoading(true);
+        if (
+          foundItemDetails.item_name === "" ||
+          foundItemDetails.description === "" ||
+          foundItemDetails.date === "" ||
+          foundItemDetails.location === ""
+        ) {
+          setAlert({
+            msg: "All the details must be filled other than Image.",
+            state: true,
+          });
+          return;
         }
-        let result = await postFound(foundItemDetails)
+        let formData = new FormData();
+        formData.append("item_name", foundItemDetails.item_name);
+        formData.append("description", foundItemDetails.description);
+        formData.append("date", foundItemDetails.date);
+        formData.append("location", foundItemDetails.location);
+        if (foundItemDetails.image) {
+          formData.append("image", foundItemDetails.image);
+        }
+
+        let result = await postFound(formData);
         if (result) {
-          setAlert({ msg: 'Posting found item Successful.', state: true })
-          setChangeInPost(true)
+          setAlert({ msg: "Posting found item Successful.", state: true });
+          setChangeInPost(true);
           setFoundItemDetails({
             item_name: "",
             description: "",
@@ -102,12 +132,13 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
             image: null,
           });
         }
-      }
-      catch (err) {
-        setAlert({ msg: 'Posting Found Item Failed. ' + String(err.message), state: true })
-      }
-      finally {
-        setLoading(false)
+      } catch (err) {
+        setAlert({
+          msg: "Posting Found Item Failed. " + String(err.message),
+          state: true,
+        });
+      } finally {
+        setLoading(false);
       }
     }
   }
@@ -124,10 +155,11 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
               navigate_post("/post/report_lost_items");
             }}
             className={`w-1/2 rounded-tl-lg transition-colors font-bold
-                ${activePost === "lost"
-                ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
-                : "bg-(--pure-white) text-(--text-1)"
-              } cursor-pointer`}
+                ${
+                  activePost === "lost"
+                    ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
+                    : "bg-(--pure-white) text-(--text-1)"
+                } cursor-pointer`}
           >
             Post Lost Item
           </button>
@@ -139,17 +171,21 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
               navigate_post("/post/report_found_items");
             }}
             className={`w-1/2 rounded-tr-lg font-bold transition-colors
-                ${activePost === "found"
-                ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
-                : "bg-(--pure-white) text-(--text-1)"
-              } cursor-pointer`}
+                ${
+                  activePost === "found"
+                    ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
+                    : "bg-(--pure-white) text-(--text-1)"
+                } cursor-pointer`}
           >
             Post Found Item
           </button>
         </div>
 
         {activePost === "lost" ? (
-          <form className="my-5 flex flex-col items-center w-4/5 gap-2" onSubmit={onSubmit}>
+          <form
+            className="my-5 flex flex-col items-center w-4/5 gap-2"
+            onSubmit={onSubmit}
+          >
             <div className="w-180 flex flex-col gap-1">
               <label htmlFor="item_name" className="text-left">
                 Item Name:
@@ -237,13 +273,18 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
             <button
               type="submit"
               className={`border rounded-lg w-180 h-10 cursor-pointer bg-[linear-gradient(90deg,#255A4F_0%,#2F6F62_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(47,111,98,0.5)] hover:brightness-110 flex justify-center items-center gap-6 ${loading ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:brightness-110"}`}
-              
             >
-              {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin "></span>}<span>Submit</span>
+              {loading && (
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin "></span>
+              )}
+              <span>Submit</span>
             </button>
           </form>
         ) : (
-          <form className="my-5 flex flex-col items-center w-4/5 gap-2" onSubmit={onSubmit}>
+          <form
+            className="my-5 flex flex-col items-center w-4/5 gap-2"
+            onSubmit={onSubmit}
+          >
             <div className="w-180 flex flex-col gap-1">
               <label htmlFor="found_item_name" className="text-left">
                 Item Name:
@@ -337,7 +378,10 @@ export default function Post({ setActivePost, activePost, loading, setLoading, s
               className={`border rounded-lg w-180 h-10 cursor-pointer bg-[linear-gradient(90deg,#A9701E_0%,#C2872E_100%)] text-white transition-all duration-300 hover:shadow-[0_0_20px_rgba(194,135,46,0.5)] hover:brightness-110 flex justify-center items-center gap-6 ${loading ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:brightness-110"}`}
               disabled={loading}
             >
-              {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}<span>Submit</span>
+              {loading && (
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              )}
+              <span>Submit</span>
             </button>
           </form>
         )}

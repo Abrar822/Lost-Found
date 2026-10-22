@@ -1,60 +1,41 @@
 import { getUserToken } from "../helper/getToken";
 
+export async function postLost(formData) {
+  let token = getUserToken();
+  if (!token) {
+    throw new Error("JWT token not found. Please log in again.");
+  }
+  let response = await fetch("http://127.0.0.1:8000/post_lost", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
 
-export async function postLost(item) {
-    let token = getUserToken()
-    if (!token) {
-        throw new Error("JWT token not found. Please log in again.");
-    }
-    console.log(token)
-    let response = await fetch('http://127.0.0.1:8000/post_lost', {
-        method: "POST",
-        headers: {
-            // "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        // body: JSON.stringify({
-        //     item_name: item.item_name,
-        //     description: item.description,
-        //     date: item.date,
-        //     location: item.location,
-        //     image: item.image?.name
-        // })
-        body: item
-    })
-
-    let result = await response.json()
-    if (!response.ok) {
-        throw new Error(`${result.detail}`);
-    }
-    return result
-
+  let result = await response.json();
+  if (!response.ok) {
+    throw new Error(`${result.detail}`);
+  }
+  return result;
 }
 
-export async function postFound(item) {
-    let token = getUserToken()
-    if (!token) {
-        throw new Error("JWT token not found. Please log in again.");
-    }
-    let response = await fetch('http://127.0.0.1:8000/post_found', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-            item_name: item.item_name,
-            description: item.description,
-            date: item.date,
-            location: item.location,
-            image: item.image?.name
-        })
-    })
+export async function postFound(formData) {
+  let token = getUserToken();
+  if (!token) {
+    throw new Error("JWT token not found. Please log in again.");
+  }
+  let response = await fetch("http://127.0.0.1:8000/post_found", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
 
-    let result = await response.json()
-    if (!response.ok) {
-        throw new Error(`${result.detail}`);
-    }
-    return result
-
+  let result = await response.json();
+  if (!response.ok) {
+    throw new Error(`${result.detail}`);
+  }
+  return result;
 }

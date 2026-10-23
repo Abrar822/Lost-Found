@@ -203,6 +203,7 @@ function App() {
           description: ele[1],
           date: ele[3],
           image: ele[4],
+          
         }));
         foundData = foundData.map((ele) => ({
           item_name: ele[0],
@@ -210,6 +211,7 @@ function App() {
           description: ele[1],
           date: ele[3],
           image: ele[4],
+          id: ele[5]
         }));
 
         setRetrivedData({
@@ -487,7 +489,7 @@ function App() {
               </ProtectedRoute>
             }
           ></Route>
-          <Route path="/item-details" element={<ItemDetails />} />
+          <Route path="/item-details" element={<ItemDetails lostItems={lostItems}/>} />
           <Route
             path={"*"}
             element={<PageNotFound setUserAuth={setUserAuth} />}

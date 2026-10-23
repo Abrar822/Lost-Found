@@ -73,7 +73,7 @@ export default function Profile({
 
       {edit && (
         <div
-          className="fixed inset-0 bg-black/60 z-2"
+          className="overlay absolute inset-0 bg-black/60 z-1"
           onClick={() => {
             setEditData({ ...userData });
             setEdit(false);
@@ -81,7 +81,7 @@ export default function Profile({
         />
       )}
 
-      <div className="min-h-screen flex justify-start py-10 px-10 mt-15 bg-(--bg  )">
+      <div className="relative min-h-screen flex justify-start py-10 px-10 mt-15 bg-(--bg  )">
         <div className="w-full max-w rounded-2xl px-8 py-2 mx-20">
           {/* Header */}
           <h1 className="text-4xl font-bold text-[#1e293b] mb-8">Profile</h1>
@@ -92,9 +92,8 @@ export default function Profile({
               <div
                 onClick={() => setActiveTab("lost")}
                 className={`w-24 h-24 rounded-full 
-            flex items-center justify-center text-white shadow-md ${
-              activeTab === "lost" ? "bg-(--green)" : "bg-[#B47B27]"
-            }`}
+            flex items-center justify-center text-white shadow-md ${activeTab === "lost" ? "bg-(--green)" : "bg-[#B47B27]"
+                  }`}
               >
                 <User size={48} weight="fill" />
               </div>
@@ -111,11 +110,10 @@ export default function Profile({
               onClick={() => setEdit(true)}
               className={`border-2 border-indigo-100 font-bold 
           px-6 py-2 rounded-lg transition-colors duration-200 cursor-pointer
-          ${
-            activeTab === "found"
-              ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
-              : "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
-          }`}
+          ${activeTab === "found"
+                  ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
+                  : "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
+                }`}
             >
               Edit Profile
             </button>
@@ -129,21 +127,19 @@ export default function Profile({
             <div className="flex border-b border-gray-200 mb-6">
               <button
                 onClick={() => setActiveTab("lost")}
-                className={`flex-1 pb-3 pt-2 text-center text-sm sm:text-base rounded-tl-lg font-bold transition-colors ${
-                  activeTab === "lost"
+                className={`flex-1 pb-3 pt-2 text-center text-sm sm:text-base rounded-tl-lg font-bold transition-colors ${activeTab === "lost"
                     ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
                     : "text--(--text-1)"
-                }`}
+                  }`}
               >
                 Lost Items
               </button>
               <button
                 onClick={() => setActiveTab("found")}
-                className={`flex-1 pb-1 text-center text-sm sm:text-base rounded-tr-lg font-bold transition-colors ${
-                  activeTab === "found"
+                className={`flex-1 pb-1 text-center text-sm sm:text-base rounded-tr-lg font-bold transition-colors ${activeTab === "found"
                     ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
                     : "text--(--text-1)"
-                }`}
+                  }`}
               >
                 Found Items
               </button>
@@ -192,11 +188,10 @@ export default function Profile({
                             {item.title}
                           </h3>
                           <span
-                            className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md ${
-                              item.type === "Lost"
+                            className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md ${item.type === "Lost"
                                 ? "bg-green-100 text-(--green)"
                                 : "bg-orange-100 text-(--orange)"
-                            }`}
+                              }`}
                           >
                             {item.type}
                           </span>
@@ -207,12 +202,12 @@ export default function Profile({
                           <span>
                             {item.date
                               ? new Date(
-                                  `${item.date}T00:00:00`,
-                                ).toLocaleDateString("en-GB", {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                })
+                                `${item.date}T00:00:00`,
+                              ).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
                               : "Date unavailable"}
                           </span>
                         </div>
@@ -242,11 +237,10 @@ export default function Profile({
 
       {edit && (
         <div
-          className="container2 w-full max-w-sm min-h-100 rounded-xl border border-black z-2 
+          className="absolute container2 w-full max-w-sm min-h-100 rounded-xl border border-black z-2 
     bg-(--pure-white)
-    absolute
           left-1/2
-          top-1/2
+          top-100
           -translate-x-1/2
           -translate-y-1/2"
         >
@@ -276,7 +270,7 @@ export default function Profile({
                 </defs>
 
                 {/* Background Circle */}
-                <circle cx="100" cy="100" r="98" fill={`${activeTab==='lost' ? "url()" : "url(#orangeGradient)" }`} />
+                <circle cx="100" cy="100" r="98" fill={`${activeTab === 'lost' ? "url()" : "url(#orangeGradient)"}`} />
 
                 {/* User Head */}
                 <circle

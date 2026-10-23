@@ -203,6 +203,8 @@ function App() {
           description: ele[1],
           date: ele[3],
           image: ele[4],
+          l_id: ele[5],
+          u_id: ele[6]
         }));
         foundData = foundData.map((ele) => ({
           item_name: ele[0],
@@ -210,13 +212,15 @@ function App() {
           description: ele[1],
           date: ele[3],
           image: ele[4],
+          f_id: ele[5],
+          u_id: ele[6]
         }));
 
         setRetrivedData({
           foundData: [...foundData],
           lostData: [...lostData],
         });
-        console.log(retrievedData);
+        console.log('Retrieved data: ', retrievedData);
         console.log("ended");
       } catch (err) {
         setAlert({ msg: "Failed to retrieve the items details.", state: true });

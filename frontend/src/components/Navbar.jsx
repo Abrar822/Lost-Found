@@ -71,17 +71,17 @@ export default function Navbar({ setUserAuth, isLog, setIsLog, setAlert, userRol
                   setUserAuth({ state: true, page: "signup" });
                 }}
               >
-                <button className="cursor-pointer border-0 outline-0 py-1 px-3 w-full transition-all duration-150 ease-in hover:opacity-90">
+                <button className="cursor-pointer border-0 outline-0 py-1 px-3 w-full transition-all duration-150 ease-in">
                   Sign Up
                 </button>
               </li>
             )}
             {isLog && (
               <li
-                className="h-[40px] text-(--pure-white) bg-(--btn-black) font-bold rounded-lg flex justify-center items-center transition-all duration-150 ease-in active:scale-95 w-[90px]overflow-hidden"
+                className="h-[40px] text-(--pure-white) bg-(--btn-black) font-bold rounded-lg flex justify-center items-center transition-all duration-150 ease-in active:scale-95 w-[90px] overflow-hidden hover:text-(--pure-white)"
                 onClick={logOut}
               >
-                <button className="cursor-pointer border-0 outline-0 py-1 px-3 w-full transition-all duration-150 ease-in hover:opacity-90">
+                <button className="cursor-pointer border-0 outline-0 py-1 px-3 w-full transition-all duration-150 ease-in hover:text-(--pure-white)">
                   Log Out
                 </button>
               </li>

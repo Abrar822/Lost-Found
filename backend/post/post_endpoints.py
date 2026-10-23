@@ -72,7 +72,7 @@ def lostItem(item_name: str = Form(...), description: str = Form(...), location:
         vectorize_lost(data.data)
         return lost_item
     except HTTPException as httpErr:
-        print(str(httpErr))
+        print(httpErr)
         if conn:
             conn.rollback()
         raise httpErr

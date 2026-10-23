@@ -78,7 +78,7 @@ export default function ItemDetails({lostItems}) {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = defaultItem;
                 }}
-                className="w-full h-full object-contain rotate-323"
+                className={`w-full h-full object-contain origin-center ${!item.image ? 'rotate-323': ''}`}
               />
             </div>
 

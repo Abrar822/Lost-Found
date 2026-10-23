@@ -177,7 +177,7 @@ export default function Profile({
                             e.currentTarget.onerror = null;
                             e.currentTarget.src = defaultItem;
                           }}
-                          className="w-30 h-16 rounded-xl border border-gray-100 rotate-315"
+                          className={`w-30 h-16 rounded-xl border border-gray-100 ${!item.image ? 'rotate-315': ''}`}
                         />
                       </div>
 

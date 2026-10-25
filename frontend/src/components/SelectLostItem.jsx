@@ -5,7 +5,7 @@ import {
     MapPin,
 } from "@phosphor-icons/react";
 
-export default function SelectLostItem({ lostSelector, setLostSelector, lostItems }) {
+export default function SelectLostItem({ lostSelector, setLostSelector, lostItems, item }) {
     const [selectedLostItemId, setSelectedLostItemId] = useState(null);
     const formattedDate = (date) =>
         new Date(`${date}T00:00:00`).toLocaleDateString("en-GB", {
@@ -27,21 +27,22 @@ export default function SelectLostItem({ lostSelector, setLostSelector, lostItem
                     Select the item to be reported
                 </div>
                 <div className="flex items-center justify-start flex-col h-[400px] overflow-auto w-full max-w-[1200px] m-8">
-                    {lostItems.map((item) => (
+                    {lostItems.length !== 0 ? (lostItems.map((item) => (
                         <div
                             key={item.id}
                             onClick={() => setSelectedLostItemId(item.id)}
                             className={`relative box px-4 py-3 rounded-2xl flex gap-8 cursor-pointer transition-colors duration-200 group w-130 ${
                                 selectedLostItemId === item.id 
                                 ? "bg-green-200"
-                                : "bg-transparent border-transparent hover:bg-green-100"
+                                : "bg-transparent hover:bg-green-100"
                             }`}
                         >
                             <div className="img h-[100px] w-[150px] bg-white rounded-2xl overflow-x-hidden shrink-0 border-solid border-[1px] border-black overflow-hidden flex justify-center items-center">
                                 <img
-                                    className="text-[12px] w-30 h-16 rounded-xl border border-gray-100 rotate-315"
+                                    className={`text-[12px] w-30 h-16 rounded-xl border border-gray-100 ${!item.image ? "rotate-315" : ""}`}
                                     src={item.image || defaultItem}
                                     alt={item.title}
+                                    
                                 />
                             </div>
 
@@ -63,7 +64,17 @@ export default function SelectLostItem({ lostSelector, setLostSelector, lostItem
                             </div>
 
                         </div>
-                    ))}
+                    )))
+                    :
+                    (
+                        <div className="flex flex-col items-center">
+                            <span className="font-semibold">
+                            No Lost Item Report Found.</span>
+                            <span className="text-sm text-slate-600">
+                            Please Report Lost Item First</span>
+                        </div>
+                    )
+                    }
                 </div>
                 <div>
                     <button className="bg-(--green) rounded-lg px-6 py-2 text-white mb-4 hover:bg-(--green-hover) cursor-pointer">

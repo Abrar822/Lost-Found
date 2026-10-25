@@ -14,6 +14,7 @@ export default function ItemDetails({lostItems}) {
   const [lostSelector, setLostSelector] = useState(false)
   const navigate = useNavigate();
   const location = useLocation();
+  
 
   const item = location.state?.item;
 
@@ -51,7 +52,7 @@ export default function ItemDetails({lostItems}) {
   return (
     <div className=" relative min-h-screen bg-(--bg) px-4 py-8 mt-17.5">
 
-      {lostSelector && <SelectLostItem lostSelector={lostSelector} setLostSelector={setLostSelector} lostItems={lostItems} className="absolute" />}
+      {lostSelector && <SelectLostItem lostSelector={lostSelector} setLostSelector={setLostSelector} lostItems={lostItems} className="absolute" item={item}/>}
       
       <div className="relative max-w-5xl mx-auto">
         {/* Back button */}
@@ -65,7 +66,7 @@ export default function ItemDetails({lostItems}) {
 
         {/* Item details card */}
         <div className="relative bg-white rounded-2xl shadow-sm border border-gray-200 p-5 sm:p-8">
-          {!item.title && item.type === 'Found' && <div className={`duration-150 ease-in-out active:scale-95 cursor-pointer font-bold absolute claim ${item.type === 'Lost' ? 'bg-(--green)' : 'bg-(--orange)'} right-5 bottom-5 px-4 py-2 rounded-xl text-white ${item.type === 'Lost' ? 'hover:bg-(--green-hover)' : 'hover:bg-(--orange-hover)'}`} onClick={()=> setLostSelector(true)}>Claim</div>}
+          {!item.title && item.type === 'Found' && item.u_id !== lostItems[0]?.U_id && <div className={`duration-150 ease-in-out active:scale-95 cursor-pointer font-bold absolute claim ${item.type === 'Lost' ? 'bg-(--green)' : 'bg-(--orange)'} right-5 bottom-5 px-4 py-2 rounded-xl text-white ${item.type === 'Lost' ? 'hover:bg-(--green-hover)' : 'hover:bg-(--orange-hover)'}`} onClick={()=> setLostSelector(true)}>Claim</div>}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Item image */}

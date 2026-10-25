@@ -135,7 +135,8 @@ def get_lost_items(
                 l."Location_Lost" AS location,
                 l."Image_Upload" AS image,
                 l."Description" AS description,
-                u."Phone_Number" AS contact
+                u."Phone_Number" AS contact,
+                l."U_id"
             FROM "Loser" AS l
             LEFT JOIN "User" AS u
                 ON l."U_id" = u."U_id"
@@ -177,7 +178,8 @@ def get_found_items(
                 f."Location_Lost" AS location,
                 f."Image_Upload" AS image,
                 f."Description" AS description,
-                u."Phone_Number" AS contact
+                u."Phone_Number" AS contact,
+                f."U_id"
             FROM "Finder" AS f
             LEFT JOIN "User" AS u
                 ON f."U_id" = u."U_id"

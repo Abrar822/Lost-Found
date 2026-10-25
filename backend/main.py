@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from contextlib import asynccontextmanager
 from .auth.auth_endpoints import db_endpoints
 from .post.post_endpoints import post_endpoints
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,19 +6,8 @@ from .profile.profile_endpoints import profile_endpoints
 from .admin.admin_endpoints import admin_endpoints
 from .search.search_endpoints import search_endpoints
 
-from .search.vectorization import vectorize_found, vectorize_lost
-from .search import data
-from .search.vectorization import retrieve_items
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    retrieve_items()
-    vectorize_lost(data.data)
-    vectorize_found(data.data)
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,

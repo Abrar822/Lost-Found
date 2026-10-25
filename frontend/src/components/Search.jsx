@@ -104,6 +104,7 @@ export default function Search({
           : { f_id: ele.F_id }),
 
         u_id: ele.U_id,
+        phone_no: ele.Phone_Number
       }));
 
       setFilterArr(data);

@@ -61,7 +61,7 @@ export default function ItemDetails({lostItems}) {
           className="flex items-center gap-2 mb-6 font-semibold hover:text-gray-600 cursor-pointer"
         >
           <ArrowLeft size={20} />
-          Back to Profile
+          {item.title ? <span>Back to Profile</span>: <span>Back to Dashboard</span>}
         </button>
 
         {/* Item details card */}
@@ -142,7 +142,7 @@ export default function ItemDetails({lostItems}) {
 
                 <div>
                   <p className="font-semibold text-gray-800">Contact</p>
-                  <p>{item.contact || "Contact information unavailable"}</p>
+                  <p>{item.contact || item.phone_no || "Contact information unavailable"}</p>
                 </div>
               </div>
             </div>

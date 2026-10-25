@@ -4,8 +4,8 @@ from ..db_operations.db_connect import db_connect
 from psycopg2.extras import RealDictCursor
 from ..auth.jwt import get_u_id
 from ..search.vectorization import vectorize_found, vectorize_lost
-from ..search import data
-from ..search.vectorization import retrieve_items
+# from ..search import data
+from ..search.vectorization import retrieve_data
 import os
 from uuid import uuid4
 from dotenv import load_dotenv
@@ -68,8 +68,8 @@ def lostItem(item_name: str = Form(...), description: str = Form(...), location:
                 detail="Failed to create lost item.",
             )
         conn.commit()
-        retrieve_items()
-        vectorize_lost(data.data)
+        data = retrieve_data(user_id)
+        vectorize_lost(data)
         return lost_item
     except HTTPException as httpErr:
         print(httpErr)
@@ -121,8 +121,8 @@ def foundItem(item_name: str = Form(...), description: str = Form(...), location
                 detail="Failed to create a Found Item",
             )
         conn.commit()
-        retrieve_items()
-        vectorize_found(data.data)
+        data = retrieve_data(user_id)
+        vectorize_found(data)
         return found_item
     except HTTPException as httpErr:
         raise httpErr

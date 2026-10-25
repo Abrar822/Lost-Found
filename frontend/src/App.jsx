@@ -204,7 +204,8 @@ function App() {
           date: ele[3],
           image: ele[4],
           l_id: ele[5],
-          u_id: ele[6]
+          u_id: ele[6],
+          phone_no: ele[7]
         }));
         foundData = foundData.map((ele) => ({
           item_name: ele[0],
@@ -213,7 +214,8 @@ function App() {
           date: ele[3],
           image: ele[4],
           f_id: ele[5],
-          u_id: ele[6]
+          u_id: ele[6],
+          phone_no: ele[7]
         }));
 
         setRetrivedData({

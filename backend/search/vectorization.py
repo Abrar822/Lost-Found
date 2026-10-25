@@ -2,7 +2,6 @@ from datetime import date
 import math
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from . import data
 from psycopg2.extras import RealDictCursor
 from ..db_operations.db_connect import get_connection_obj
 
@@ -42,7 +41,7 @@ def vectorize_found(data):
         return
 
     # found
-    names, descriptions, locations, dates, img_links, f_ids, u_ids = map(
+    names, descriptions, locations, dates, img_links, f_ids, u_ids, p_nos = map(
         list, zip(*data["found_items_data"])
     )
     global tfidf_matrix_names_found, tfidf_matrix_descriptions_found, tfidf_matrix_locations_found
@@ -59,7 +58,7 @@ def vectorize_lost(data):
         return
 
     # lost
-    names, descriptions, locations, dates, img_links, l_ids, u_ids = map(
+    names, descriptions, locations, dates, img_links, l_ids, u_ids, p_nos = map(
         list, zip(*data["lost_items_data"])
     )
     global tfidf_matrix_names_lost, tfidf_matrix_descriptions_lost, tfidf_matrix_locations_lost
@@ -100,9 +99,9 @@ def calculate_similarity_lost(data, query):
     merged_result = [
         d[0] + [d[1]] for d in zip(data["lost_items_data"], similarity_scores)
     ]
-    merged_result.sort(key=lambda x: x[7], reverse=True)
+    merged_result.sort(key=lambda x: x[8], reverse=True)
 
-    result = list(filter(lambda x: x[7] > 0.15, merged_result))
+    result = list(filter(lambda x: x[8] > 0.15, merged_result))
     result = [
         {
             "Item_Name": d[0],
@@ -111,7 +110,8 @@ def calculate_similarity_lost(data, query):
             "Date_Lost": d[3],
             "Image_Upload": d[4],
             "L_id": d[5],
-            "U_id": d[6]
+            "U_id": d[6],
+            "Phone_Number": d[7],
         }
         for d in result
     ]
@@ -150,9 +150,9 @@ def calculate_similarity_found(data, query):
     merged_result = [
         d[0] + [d[1]] for d in zip(data["found_items_data"], similarity_scores)
     ]
-    merged_result.sort(key=lambda x: x[7], reverse=True)
+    merged_result.sort(key=lambda x: x[8], reverse=True)
 
-    result = list(filter(lambda x: x[7] > 0.15, merged_result))
+    result = list(filter(lambda x: x[8] > 0.15, merged_result))
     result = [
         {
             "Item_Name": d[0],
@@ -161,28 +161,39 @@ def calculate_similarity_found(data, query):
             "Date_Found": d[3],
             "Image_Upload": d[4],
             "F_id": d[5],
-            "U_id": d[6]
+            "U_id": d[6],
+            "Phone_Number": d[7],
         }
         for d in result
     ]
     return result
 
-
-def retrieve_items():
+def retrieve_data(user_id):
     conn = None
     cur = None
+    data = {
+        'lost_items_data': [],
+        'found_items_data': []
+    }
 
     try:
         conn = get_connection_obj()
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
-        cur.execute("""
-            SELECT *
-            FROM "Loser"
-        """)
+        query = """SELECT "O_id" FROM "User" WHERE "U_id" = %s """
+        cur.execute(query, (user_id,))
+        o_id = cur.fetchone()["O_id"]
+
+        query = """SELECT "U_id" FROM "User" WHERE "O_id" = %s"""
+        cur.execute(query, (o_id,))
+        result = cur.fetchall()
+        user_ids = [d["U_id"] for d in result]
+
+        query = """SELECT L.*, U."Phone_Number" FROM "Loser" as L JOIN "User" as U ON L."U_id" = U."U_id" WHERE U."U_id" = ANY(%s) AND U."U_id" <> (%s) """
+        cur.execute(query, (user_ids, user_id))
         lost_items = cur.fetchall()
 
-        data.data["lost_items_data"] = [
+        data["lost_items_data"] = [
             [
                 row["Item_Name"],
                 row["Description"],
@@ -191,17 +202,18 @@ def retrieve_items():
                 row["Image_Upload"],
                 row["L_id"],
                 row["U_id"],
+                row["Phone_Number"]
             ]
             for row in lost_items
         ]
 
-        cur.execute("""
-            SELECT *
-            FROM "Finder"
-        """)
+        query = """
+            SELECT F.*, U."Phone_Number" FROM "Finder" as F JOIN "User" as U ON F."U_id" = U."U_id" WHERE U."U_id" = ANY(%s) AND U."U_id" <> (%s)
+        """
+        cur.execute(query, (user_ids, user_id))
         found_items = cur.fetchall()
 
-        data.data["found_items_data"] = [
+        data["found_items_data"] = [
             [
                 row["Item_Name"],
                 row["Description"],
@@ -210,9 +222,11 @@ def retrieve_items():
                 row["Image_Upload"],
                 row["F_id"],
                 row["U_id"],
+                row["Phone_Number"]
             ]
             for row in found_items
         ]
+        return data
 
     finally:
         if cur:

@@ -133,8 +133,8 @@ export default function Profile({
               <button
                 onClick={() => setActiveTab("lost")}
                 className={`flex-1 pb-3 pt-2 text-center text-sm sm:text-base rounded-tl-lg font-bold transition-colors ${activeTab === "lost"
-                    ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
-                    : "text--(--text-1)"
+                  ? "bg-(--green) text-(--pure-white) hover:bg-(--green-hover)"
+                  : "text--(--text-1)"
                   }`}
               >
                 Lost Items
@@ -142,8 +142,8 @@ export default function Profile({
               <button
                 onClick={() => setActiveTab("found")}
                 className={`flex-1 pb-1 text-center text-sm sm:text-base rounded-tr-lg font-bold transition-colors ${activeTab === "found"
-                    ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
-                    : "text--(--text-1)"
+                  ? "bg-(--orange) text-(--pure-white) hover:bg-(--orange-hover)"
+                  : "text--(--text-1)"
                   }`}
               >
                 Found Items
@@ -182,7 +182,7 @@ export default function Profile({
                             e.currentTarget.onerror = null;
                             e.currentTarget.src = defaultItem;
                           }}
-                          className={`w-30 h-16 rounded-xl border border-gray-100 ${!item.image ? 'rotate-315': ''}`}
+                          className={`w-30 h-16 rounded-xl border border-gray-100 ${!item.image ? 'rotate-315' : ''}`}
                         />
                       </div>
 
@@ -194,8 +194,8 @@ export default function Profile({
                           </h3>
                           <span
                             className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md ${item.type === "Lost"
-                                ? "bg-green-100 text-(--green)"
-                                : "bg-orange-100 text-(--orange)"
+                              ? "bg-green-100 text-(--green)"
+                              : "bg-orange-100 text-(--orange)"
                               }`}
                           >
                             {item.type}
@@ -387,106 +387,103 @@ export default function Profile({
         </div>
       )}
 
-{/* My Claim Requests Section */}
-<div className="relative min-h-screen flex justify-start py-10 px-10 mt-0 bg-(--bg)">
-  <div className="w-full rounded-2xl px-8 py-2 mx-20">
-    <div className="bg-white p-5 rounded-2xl shadow-lg">
-      <h2
-        className="text-2xl font-bold text-gray-900 mb-6 cursor-pointer"
-        onClick={() => navigate("/claim-requests")}
-      >
-        My Claim Requests
-      </h2>
-
-      <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto overflow-x-hidden pr-2">
-        {claimAllDetails.length > 0 ? (
-          claimAllDetails.map((item) => (
-            <div
-              key={item.F_id}
+      {/* My Claim Requests Section */}
+      <div className="relative min-h-screen flex justify-start py-10 px-10 mt-0 bg-(--bg)">
+        <div className="w-full rounded-2xl px-8 py-2 mx-20">
+          <div className="bg-white p-5 rounded-2xl shadow-lg">
+            <h2
+              className="text-2xl font-bold text-gray-900 mb-6 cursor-pointer"
               onClick={() => navigate("/claim-requests")}
-              className="flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
             >
-              {/* Item information */}
-              <div className="flex items-center gap-4 sm:gap-6">
-                {/* Item Image */}
-                <div className="flex items-center justify-center h-20 w-24 border overflow-hidden rounded-lg">
-                  <img
-                    src={item.Image_Upload || defaultItem}
-                    alt={item.Item_Name || "Item image"}
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = defaultItem;
-                    }}
-                    className={`w-full h-full object-cover rounded-xl ${
-                      !item.Image_Upload ? "rotate-315" : ""
-                    }`}
-                  />
+              My Claim Requests
+            </h2>
+
+            <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto overflow-x-hidden pr-2">
+              {claimAllDetails.length > 0 ? (
+                claimAllDetails.map((item) => (
+                  <div
+                    key={item.F_id}
+                    onClick={() => navigate("/claim-requests")}
+                    className="flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
+                  >
+                    {/* Item information */}
+                    <div className="flex items-center gap-4 sm:gap-6">
+                      {/* Item Image */}
+                      <div className="flex border items-center justify-center h-20 overflow-hidden rounded-lg">
+                        <img
+                          src={item.image || defaultItem}
+                          alt={item.title || "Item image"}
+                          loading="eager"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = defaultItem;
+                          }}
+                          className={`w-30 h-16 rounded-xl border border-gray-100 ${!item.image ? 'rotate-315' : ''}`}
+                        />
+                      </div>
+
+                      {/* Item Details */}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h3 className="font-semibold text-gray-900 text-lg">
+                            {item.Item_Name || "Unnamed item"}
+                          </h3>
+
+                          <span
+                            className={`text-xs font-bold px-2 py-1 rounded-md ${item.Status?.toLowerCase() === "approved"
+                              ? "bg-green-100 text-green-700"
+                              : item.Status?.toLowerCase() === "rejected"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-yellow-100 text-yellow-700"
+                              }`}
+                          >
+                            {item.Status || "Pending"}
+                          </span>
+                        </div>
+
+                        {/* Date Found */}
+                        <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm mt-1">
+                          <CalendarBlankIcon size={16} />
+
+                          <span>
+                            {item.Date_Found
+                              ? new Date(
+                                `${item.Date_Found}T00:00:00`
+                              ).toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
+                              : "Date unavailable"}
+                          </span>
+                        </div>
+
+                        {/* Location */}
+                        <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm">
+                          <MapPin size={16} />
+
+                          <span>
+                            {item.Location_Lost || "Location unavailable"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Arrow */}
+                    <div className="text-gray-400 group-hover:text-gray-700 transition-colors pr-2">
+                      <CaretRight size={24} />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-10 text-gray-400">
+                  No claim requests found.
                 </div>
-
-                {/* Item Details */}
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h3 className="font-semibold text-gray-900 text-lg">
-                      {item.Item_Name || "Unnamed item"}
-                    </h3>
-
-                    <span
-                      className={`text-xs font-bold px-2 py-1 rounded-md ${
-                        item.Status?.toLowerCase() === "approved"
-                          ? "bg-green-100 text-green-700"
-                          : item.Status?.toLowerCase() === "rejected"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {item.Status || "Pending"}
-                    </span>
-                  </div>
-
-                  {/* Date Found */}
-                  <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm mt-1">
-                    <CalendarBlankIcon size={16} />
-
-                    <span>
-                      {item.Date_Found
-                        ? new Date(
-                            `${item.Date_Found}T00:00:00`
-                          ).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })
-                        : "Date unavailable"}
-                    </span>
-                  </div>
-
-                  {/* Location */}
-                  <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm">
-                    <MapPin size={16} />
-
-                    <span>
-                      {item.Location_Lost || "Location unavailable"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Arrow */}
-              <div className="text-gray-400 group-hover:text-gray-700 transition-colors pr-2">
-                <CaretRight size={24} />
-              </div>
+              )}
             </div>
-          ))
-        ) : (
-          <div className="text-center py-10 text-gray-400">
-            No claim requests found.
           </div>
-        )}
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
     </>
   );

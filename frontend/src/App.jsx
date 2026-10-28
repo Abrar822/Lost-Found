@@ -530,7 +530,7 @@ function App() {
             }
           ></Route>
           <Route path="/item-details" element={<ItemDetails lostItems={lostItems} setAlert={setAlert} loading={loading} setLoading={setLoading} />} />
-          <Route path="/claim-requests" element={<ClaimRequests />} />
+          <Route path="/claim-requests" element={<ClaimRequests claimDetail={claimDetail} />} />
           <Route
             path={"*"}
             element={<PageNotFound setUserAuth={setUserAuth} />}

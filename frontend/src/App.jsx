@@ -17,6 +17,7 @@ import ItemDetails from "./components/ItemDetails";
 import { getFoundData, getLostData } from "./api/searchApi";
 import ClaimRequests from "./components/ClaimRequests";
 import { getUserDetails, getLostItems, getFoundItems } from "./api/ProfileApi";
+import { details } from "./api/ClaimAPI";
 
 // HttpOnly + Secure + SameSite cookie
 // what is it
@@ -54,6 +55,7 @@ function App() {
     users: "",
   });
   const [users, setUsers] = useState([]);
+  const [claimDetail, setClaimDetail] = useState({})
 
   // function that checks if the toke is expired or not
   function isTokenValid(token) {
@@ -180,7 +182,7 @@ function App() {
     }
   }, []);
 
-  
+
   const [retrievedData, setRetrivedData] = useState({
     foundData: [],
     lostData: [],
@@ -296,11 +298,23 @@ function App() {
       }
     };
 
+    const claimDetails = async () => {
+      try {
+        const data = await details()
+        console.log(data)
+        setClaimDetail(data)
+
+      } catch (err) {
+        console.error("Claim data loading error:", err);
+      }
+    }
+
     if (!isLog || !userRole) return;
 
     if (userRole === "user") {
       loadUserData();
       loadItems();
+      claimDetails()
     } else if (userRole === "admin") {
       loadOrganizationData();
     }

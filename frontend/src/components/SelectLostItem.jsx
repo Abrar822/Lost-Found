@@ -5,7 +5,7 @@ import {
     MapPin,
 } from "@phosphor-icons/react";
 
-export default function SelectLostItem({ lostSelector, item, lostItems }) {
+export default function SelectLostItem({ lostSelector, setLostSelector, lostItems, item }) {
     const [selectedLostItemId, setSelectedLostItemId] = useState(null);
     const formattedDate = (date) =>
         new Date(`${date}T00:00:00`).toLocaleDateString("en-GB", {

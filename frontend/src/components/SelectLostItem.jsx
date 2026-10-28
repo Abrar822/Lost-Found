@@ -1,5 +1,5 @@
 import defaultItem from "../assets/default-item.png"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     CalendarBlankIcon,
     MapPin,
@@ -13,6 +13,11 @@ export default function SelectLostItem({ lostSelector, item, lostItems }) {
             month: "short",
             year: "numeric",
         });
+        useEffect(() => {
+            console.log('lostItems: ', lostItems)
+            console.log('item: ', item)
+            console.log('lostSelector: ', lostSelector)
+        }, [])
     return (
         <>
             {/* Overlay */}
@@ -22,7 +27,7 @@ export default function SelectLostItem({ lostSelector, item, lostItems }) {
                     setLostSelector(false)
                 }}
             ></div>
-            <div className="absolute z-2 bg-(--bg) flex items-center justify-center flex-col w-[calc(100%-60rem)] left-120 top-10">
+            <div className="absolute z-2 bg-(--bg) flex items-center justify-center flex-col w-[calc(100%-60rem)] left-120 top-10 rounded-2xl">
                 <div className="mt-4 font-bold text-xl">
                     Select the item to be reported
                 </div>

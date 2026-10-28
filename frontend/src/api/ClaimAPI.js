@@ -21,3 +21,20 @@ console.log(input)
   }
   return result;
 }
+
+export async function claimAllTheDetails() {
+  let token = getUserToken();
+  if (!token) {
+    throw new Error("JWT token not found. Please log in again.");
+  }
+  let response = await fetch('http://127.0.0.1:8000/claim/all_details', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  })
+  let data = await response.json()
+  if(!response.ok) {
+    throw new Error(`Error: ${data.detail}`)
+  }
+  return data
+}

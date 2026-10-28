@@ -42,3 +42,20 @@ def claim_request(claim:ClaimRequest, conn=Depends(db_connect), user_id : int =D
     finally:
         if cursor:
             cursor.close()
+
+
+@claim_endpoints.get('/claim/all_details')
+def fetch(conn = Depends(db_connect), user_id = Depends(get_u_id)):
+    cur = None
+    try:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        query = """
+        SELECT F.* FROM "ClaimRequests" as C JOIN "Finder" as F ON C."F_id" = F."F_id" WHERE F."U_id" = (%s)
+        """
+        cur.execute(query, (user_id,))
+        d = cur.fetchall()
+        return d
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Failed to fetch claim requests.')
+    finally:
+        if cur: cur.close()

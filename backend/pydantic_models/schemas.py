@@ -100,3 +100,7 @@ class SearchDetails(BaseModel):
     date: str
     location: str
     role: Literal['loser', 'finder']
+    
+class ClaimRequest(BaseModel):
+    L_id: int
+    F_id: int

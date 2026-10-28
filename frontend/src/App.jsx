@@ -15,6 +15,7 @@ import { getOrganizationDetails, getUsers } from "./api/AdminApi";
 import ForgotPassword from "./components/ForgotPassword";
 import ItemDetails from "./components/ItemDetails";
 import { getFoundData, getLostData } from "./api/searchApi";
+import ClaimRequests from "./components/ClaimRequests";
 import { getUserDetails, getLostItems, getFoundItems } from "./api/ProfileApi";
 
 // HttpOnly + Secure + SameSite cookie
@@ -494,6 +495,7 @@ function App() {
             }
           ></Route>
           <Route path="/item-details" element={<ItemDetails lostItems={lostItems} setAlert={setAlert} loading={loading} setLoading={setLoading} />} />
+          <Route path="/claim-requests" element={<ClaimRequests />} />
           <Route
             path={"*"}
             element={<PageNotFound setUserAuth={setUserAuth} />}

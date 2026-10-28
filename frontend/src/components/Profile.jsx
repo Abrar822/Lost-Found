@@ -382,7 +382,7 @@ export default function Profile({
         </div>
       )}
 
-      <div className="relative min-h-screen flex justify-start py-10 px-10 bg-(--bg  )">
+      <div className="relative min-h-screen flex justify-start py-1 px-10 bg-(--bg  )">
         <div className="w-full max-w rounded-2xl px-8 py-2 mx-20">
 
           {/* My Posts Section */}

@@ -12,6 +12,7 @@ import {
   CodeIcon,
 } from "@phosphor-icons/react";
 import { getUserDetails, updateUserDetails } from "../api/ProfileApi";
+import { claimAllTheDetails } from "../api/ClaimAPI";
 
 export default function Profile({
   userData,
@@ -21,7 +22,10 @@ export default function Profile({
   itemsLoading,
   itemsError,
   editData,
-  setEditData
+  setEditData,
+  setAlert,
+  claimAllDetails,
+  setClaimAllDetails
 }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("lost");
@@ -66,6 +70,7 @@ export default function Profile({
   const currentItems = activeTab === "lost" ? lostItems : foundItems;
   console.log("Lost items:", lostItems);
   console.log("Found items:", foundItems);
+
 
   return (
     <>
@@ -382,104 +387,107 @@ export default function Profile({
         </div>
       )}
 
-      <div className="relative min-h-screen flex justify-start py-10 px-10 mt-[-100px] bg-(--bg  )">
-        <div className="w-full max-w rounded-2xl px-8 py-2 mx-20">
+{/* My Claim Requests Section */}
+<div className="relative min-h-screen flex justify-start py-10 px-10 mt-0 bg-(--bg)">
+  <div className="w-full rounded-2xl px-8 py-2 mx-20">
+    <div className="bg-white p-5 rounded-2xl shadow-lg">
+      <h2
+        className="text-2xl font-bold text-gray-900 mb-6 cursor-pointer"
+        onClick={() => navigate("/claim-requests")}
+      >
+        My Claim Requests
+      </h2>
 
-          {/* My Posts Section */}
-          <div className="bg-white p-5 rounded-2xl shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6" onClick={() => {
-              navigate('/claim-requests')
-            }}>My Claim Requests</h2>
-
-            {/* Items List */}
-            <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto overflow-x-hidden pr-2">
-              {itemsLoading ? (
-                <div className="text-center py-10 text-gray-400">
-                  Loading {activeTab} details...
+      <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto overflow-x-hidden pr-2">
+        {claimAllDetails.length > 0 ? (
+          claimAllDetails.map((item) => (
+            <div
+              key={item.F_id}
+              onClick={() => navigate("/claim-requests")}
+              className="flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
+            >
+              {/* Item information */}
+              <div className="flex items-center gap-4 sm:gap-6">
+                {/* Item Image */}
+                <div className="flex items-center justify-center h-20 w-24 border overflow-hidden rounded-lg">
+                  <img
+                    src={item.Image_Upload || defaultItem}
+                    alt={item.Item_Name || "Item image"}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = defaultItem;
+                    }}
+                    className={`w-full h-full object-cover rounded-xl ${
+                      !item.Image_Upload ? "rotate-315" : ""
+                    }`}
+                  />
                 </div>
-              ) : itemsError ? (
-                <div className="text-center py-10 text-red-500">
-                  {itemsError}
-                </div>
-              ) : currentItems.length > 0 ? (
-                currentItems.map((item) => (
-                  <div
-                    key={`${item.type}-${item.id}`}
-                    onClick={() =>
-                      navigate("/item-details", {
-                        state: { item },
-                      })
-                    }
-                    className="flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-4 sm:gap-6">
-                      {/* Item Image */}
-                      <div className="flex border items-center justify-center h-20 overflow-hidden rounded-lg">
-                        <img
-                          src={item.image || defaultItem}
-                          alt={item.title || "Item image"}
-                          loading="eager"
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = defaultItem;
-                          }}
-                          className={`w-30 h-16 rounded-xl border border-gray-100 ${!item.image ? 'rotate-315': ''}`}
-                        />
-                      </div>
 
-                      {/* Item Details */}
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-gray-900 text-xl sm:text-lg">
-                            {item.title}
-                          </h3>
-                          <span
-                            className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md ${item.type === "Lost"
-                                ? "bg-green-100 text-(--green)"
-                                : "bg-orange-100 text-(--orange)"
-                              }`}
-                          >
-                            {item.type}
-                          </span>
-                        </div>
+                {/* Item Details */}
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h3 className="font-semibold text-gray-900 text-lg">
+                      {item.Item_Name || "Unnamed item"}
+                    </h3>
 
-                        <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm mt-1">
-                          <CalendarBlankIcon size={16} />
-                          <span>
-                            {item.date
-                              ? new Date(
-                                `${item.date}T00:00:00`,
-                              ).toLocaleDateString("en-GB", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              })
-                              : "Date unavailable"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm">
-                          <MapPin size={16} weight="regular" />
-                          <span>{item.location}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right Arrow */}
-                    <div className="text-gray-400 group-hover:text-gray-700 transition-colors pr-2">
-                      <CaretRight size={24} />
-                    </div>
+                    <span
+                      className={`text-xs font-bold px-2 py-1 rounded-md ${
+                        item.Status?.toLowerCase() === "approved"
+                          ? "bg-green-100 text-green-700"
+                          : item.Status?.toLowerCase() === "rejected"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {item.Status || "Pending"}
+                    </span>
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-10 text-gray-400">
-                  No {activeTab} items posted yet.
+
+                  {/* Date Found */}
+                  <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm mt-1">
+                    <CalendarBlankIcon size={16} />
+
+                    <span>
+                      {item.Date_Found
+                        ? new Date(
+                            `${item.Date_Found}T00:00:00`
+                          ).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : "Date unavailable"}
+                    </span>
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex items-center gap-2 text-slate-700 text-xs sm:text-sm">
+                    <MapPin size={16} />
+
+                    <span>
+                      {item.Location_Lost || "Location unavailable"}
+                    </span>
+                  </div>
                 </div>
-              )}
+              </div>
+
+              {/* Right Arrow */}
+              <div className="text-gray-400 group-hover:text-gray-700 transition-colors pr-2">
+                <CaretRight size={24} />
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="text-center py-10 text-gray-400">
+            No claim requests found.
           </div>
-        </div>
+        )}
       </div>
+    </div>
+  </div>
+</div>
+
     </>
   );
 }

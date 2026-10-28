@@ -17,6 +17,7 @@ import ItemDetails from "./components/ItemDetails";
 import { getFoundData, getLostData } from "./api/searchApi";
 import ClaimRequests from "./components/ClaimRequests";
 import { getUserDetails, getLostItems, getFoundItems } from "./api/ProfileApi";
+import { claimAllTheDetails } from "./api/ClaimAPI";
 import { details } from "./api/ClaimAPI";
 
 // HttpOnly + Secure + SameSite cookie
@@ -348,6 +349,23 @@ function App() {
     loadProfile();
   }, [setUserData]);
 
+  const [claimAllDetails, setClaimAllDetails] = useState([])
+  useEffect(() => {
+    const exe = async () => {
+      try {
+        let response = await claimAllTheDetails()
+        setClaimAllDetails(response)
+      } catch(err) {
+        setAlert({msg: err.message, state: true})
+      }
+    }
+    exe()
+  }, [])
+
+  useEffect(() => {
+    console.log('claimalldetails: ', claimAllDetails)
+  }, [claimAllDetails])
+
   return (
     <>
       {alert.state && <Alert msg={alert.msg} />}
@@ -504,6 +522,9 @@ function App() {
                   itemsError={itemsError}
                   editData={editData}
                   setEditData={setEditData}
+                  setAlert={setAlert}
+                  claimAllDetails={claimAllDetails}
+                  setClaimAllDetails={setClaimAllDetails}
                 />
               </ProtectedRoute>
             }

@@ -22,7 +22,25 @@ def claim_request(claim:ClaimRequest, conn=Depends(db_connect), user_id : int =D
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to create claim request.",
             )
-        conn.commit()
+        # query = """INSERT INTO "FinderClaimStatus" ("U_id","F_id") VALUES (%s,%s) RETURNING *; """
+        # result1 = cursor.fetchone()
+        # if not result1:
+        #     conn.rollback()
+        #     raise HTTPException(
+        #         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        #         detail="Failed to create finder claim request.",
+        #     )
+        
+        # query = """UPDATE "Loser" SET "Status" = "claimed" WHERE "L_Id" = %s RETURNING *; """
+        # cursor.execute(query,(claim.L_id))
+        # result1 = cursor.fetchone()
+        # if not result1:
+        #     conn.rollback()
+        #     raise HTTPException(
+        #         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        #         detail="Failed to create finder claim request.",
+        #     )
+        # conn.commit()
         
         return result
     

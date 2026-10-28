@@ -387,13 +387,15 @@ export default function Profile({
 
           {/* My Posts Section */}
           <div className="bg-white p-5 rounded-2xl shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Claim Requests</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6" onClick={() => {
+              navigate('/claim-requests')
+            }}>My Claim Requests</h2>
 
             {/* Items List */}
             <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto overflow-x-hidden pr-2">
               {itemsLoading ? (
                 <div className="text-center py-10 text-gray-400">
-                  Loading {activeTab} items...
+                  Loading {activeTab} details...
                 </div>
               ) : itemsError ? (
                 <div className="text-center py-10 text-red-500">

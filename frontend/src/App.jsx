@@ -360,7 +360,7 @@ function App() {
       }
     }
     exe()
-  }, [])
+  }, [isLog])
 
   useEffect(() => {
     console.log('claimalldetails: ', claimAllDetails)

@@ -11,8 +11,7 @@ import {
   EnvelopeIcon,
   CodeIcon,
 } from "@phosphor-icons/react";
-import { getUserDetails, updateUserDetails } from "../api/ProfileApi";
-import { claimAllTheDetails } from "../api/ClaimAPI";
+import { updateUserDetails } from "../api/ProfileApi";
 
 export default function Profile({
   userData,
@@ -68,8 +67,6 @@ export default function Profile({
   };
 
   const currentItems = activeTab === "lost" ? lostItems : foundItems;
-  console.log("Lost items:", lostItems);
-  console.log("Found items:", foundItems);
 
 
   return (

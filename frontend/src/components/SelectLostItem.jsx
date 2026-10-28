@@ -4,8 +4,9 @@ import {
     CalendarBlankIcon,
     MapPin,
 } from "@phosphor-icons/react";
+import { claimRequest } from "../api/ClaimAPI";
 
-export default function SelectLostItem({ lostSelector, setLostSelector, lostItems, item }) {
+export default function SelectLostItem({ lostSelector, setLostSelector, lostItems, item, setAlert, loading, setLoading }) {
     const [selectedLostItemId, setSelectedLostItemId] = useState(null);
     const formattedDate = (date) =>
         new Date(`${date}T00:00:00`).toLocaleDateString("en-GB", {
@@ -13,11 +14,33 @@ export default function SelectLostItem({ lostSelector, setLostSelector, lostItem
             month: "short",
             year: "numeric",
         });
-        useEffect(() => {
-            console.log('lostItems: ', lostItems)
-            console.log('item: ', item)
-            console.log('lostSelector: ', lostSelector)
-        }, [])
+    useEffect(() => {
+        console.log('lostItems: ', lostItems)
+        console.log('item: ', item)
+        console.log('lostSelector: ', lostSelector)
+    }, [])
+    async function handleClaimsubmit(event) {
+        event.preventDefault()
+        try {
+            setLoading(true)
+            const input = { F_id: (item.f_id), L_id: (selectedLostItemId) }
+            const data = await claimRequest(input)
+            if (!data) {
+                setAlert({ msg: "Failed add claim request", state: true });
+            }
+            else {
+                setAlert({
+                    msg: "Claim Request Added",
+                    state: true
+                });
+            }
+        }
+        catch (err) {
+            setAlert({ msg: err.message, state: true });
+        } finally {
+            setLoading(false);
+        }
+    }
     return (
         <>
             {/* Overlay */}
@@ -36,18 +59,17 @@ export default function SelectLostItem({ lostSelector, setLostSelector, lostItem
                         <div
                             key={item.id}
                             onClick={() => setSelectedLostItemId(item.id)}
-                            className={`relative box px-4 py-3 rounded-2xl flex gap-8 cursor-pointer transition-colors duration-200 group w-130 ${
-                                selectedLostItemId === item.id 
+                            className={`relative box px-4 py-3 rounded-2xl flex gap-8 cursor-pointer transition-colors duration-200 group w-130 ${selectedLostItemId === item.id
                                 ? "bg-green-200"
                                 : "bg-transparent hover:bg-green-100"
-                            }`}
+                                }`}
                         >
                             <div className="img h-[100px] w-[150px] bg-white rounded-2xl overflow-x-hidden shrink-0 border-solid border-[1px] border-black overflow-hidden flex justify-center items-center">
                                 <img
                                     className={`text-[12px] w-30 h-16 rounded-xl border border-gray-100 ${!item.image ? "rotate-315" : ""}`}
                                     src={item.image || defaultItem}
                                     alt={item.title}
-                                    
+
                                 />
                             </div>
 
@@ -70,20 +92,23 @@ export default function SelectLostItem({ lostSelector, setLostSelector, lostItem
 
                         </div>
                     )))
-                    :
-                    (
-                        <div className="flex flex-col items-center">
-                            <span className="font-semibold">
-                            No Lost Item Report Found.</span>
-                            <span className="text-sm text-slate-600">
-                            Please Report Lost Item First</span>
-                        </div>
-                    )
+                        :
+                        (
+                            <div className="flex flex-col items-center">
+                                <span className="font-semibold">
+                                    No Lost Item Report Found.</span>
+                                <span className="text-sm text-slate-600">
+                                    Please Report Lost Item First</span>
+                            </div>
+                        )
                     }
                 </div>
                 <div>
-                    <button className="bg-(--green) rounded-lg px-6 py-2 text-white mb-4 hover:bg-(--green-hover) cursor-pointer">
-                        Submit Claim Request
+                    <button className=" flex justify-center items-center gap-4 bg-(--green) rounded-lg px-6 py-2 text-white mb-4 hover:bg-(--green-hover) cursor-pointer" onClick={handleClaimsubmit} disabled={loading}>
+                        {loading && (
+                            <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        )}
+                        <span>Submit Claim Request</span>
                     </button>
                 </div>
             </div>

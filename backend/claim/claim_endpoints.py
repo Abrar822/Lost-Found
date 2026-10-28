@@ -13,7 +13,32 @@ def claim_request(claim:ClaimRequest, conn=Depends(db_connect), user_id : int =D
     cursor = None
     try:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
-        query = """INSERT INTO "ClaimRequests" ("L_id","F_id") VALUES (%s,%s);"""
-        cursor.execute(query,(claim.L_id, claim.L_id))
+        query = """INSERT INTO "ClaimRequests" ("L_id","F_id") VALUES (%s,%s) RETURNING *;"""
+        cursor.execute(query,(claim.L_id, claim.F_id))
         result = cursor.fetchone()
+        if not result:
+            conn.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create claim request.",
+            )
+        conn.commit()
         
+        return result
+    
+    except HTTPException as httpErr:
+        print(httpErr)
+        if conn:
+            conn.rollback()
+        raise httpErr
+    except Exception as err:
+        print(str(err))
+        if cursor:
+            cursor.close()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Some Error Occurred" + str(err),
+        )
+    finally:
+        if cursor:
+            cursor.close()

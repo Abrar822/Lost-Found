@@ -493,7 +493,7 @@ function App() {
               </ProtectedRoute>
             }
           ></Route>
-          <Route path="/item-details" element={<ItemDetails lostItems={lostItems}/>} />
+          <Route path="/item-details" element={<ItemDetails lostItems={lostItems} setAlert={setAlert} loading={loading} setLoading={setLoading} />} />
           <Route
             path={"*"}
             element={<PageNotFound setUserAuth={setUserAuth} />}

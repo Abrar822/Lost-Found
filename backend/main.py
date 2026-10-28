@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .profile.profile_endpoints import profile_endpoints
 from .admin.admin_endpoints import admin_endpoints
 from .search.search_endpoints import search_endpoints
-
+from .claim.claim_endpoints import claim_endpoints
 
 app = FastAPI()
 
@@ -25,3 +25,4 @@ app.include_router(post_endpoints)
 app.include_router(profile_endpoints)
 app.include_router(admin_endpoints)
 app.include_router(search_endpoints)
+app.include_router(claim_endpoints)

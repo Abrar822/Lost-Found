@@ -10,7 +10,7 @@ import defaultItem from "../assets/default-item.png";
 import { useEffect, useRef, useState } from "react";
 import SelectLostItem from "./SelectLostItem";
 
-export default function ItemDetails({lostItems}) {
+export default function ItemDetails({lostItems, setAlert, loading, setLoading}) {
   const [lostSelector, setLostSelector] = useState(false)
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,7 +52,7 @@ export default function ItemDetails({lostItems}) {
   return (
     <div className=" relative min-h-screen bg-(--bg) px-4 py-8 mt-17.5">
 
-      {lostSelector && <SelectLostItem lostSelector={lostSelector} setLostSelector={setLostSelector} lostItems={lostItems} className="absolute" item={item}/>}
+      {lostSelector && <SelectLostItem lostSelector={lostSelector} setLostSelector={setLostSelector} lostItems={lostItems} className="absolute" item={item} loading={loading} setLoading={setLoading} setAlert={setAlert} />}
       
       <div className="relative max-w-5xl mx-auto">
         {/* Back button */}

@@ -3,6 +3,11 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv('./backend/.env')
+print("DB HOST:", os.getenv("HOST"))
+print("DB USER:", repr(os.getenv("USER")))
+print("DB PORT:", os.getenv("DB_PORT"))
+print("DB NAME:", os.getenv("DATABASE"))
+print("PASSWORD SET:", bool(os.getenv("PASSWORD")))
 
 def db_connect():
     conn = None

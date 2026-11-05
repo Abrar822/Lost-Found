@@ -220,6 +220,7 @@ def admin_login(admin: Login, conn=Depends(db_connect)):
     except HTTPException as httpErr:
         raise httpErr
     except Exception as err:
+        print(str(err))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Some Error Occurred" + str(err),

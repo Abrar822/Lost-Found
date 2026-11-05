@@ -63,6 +63,7 @@ export function adminSignup(admin) {
 }
 
 export function userLogin(user) {
+  console.log('user login: ', API_URL)
   return fetch(`${API_URL}/user_login`, {
     method: "POST",
     headers: {

@@ -1,12 +1,15 @@
 import { getUserToken } from "../helper/getToken";
+import { API_URL } from "../config";
 
 export async function claimRequest(input) {
-console.log(input)
+  console.log(input);
+
   let token = getUserToken();
   if (!token) {
     throw new Error("JWT token not found. Please log in again.");
   }
-  let response = await fetch("http://127.0.0.1:8000/claim/request", {
+
+  let response = await fetch(`${API_URL}/claim/request`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -16,9 +19,11 @@ console.log(input)
   });
 
   let result = await response.json();
+
   if (!response.ok) {
     throw new Error(`${result.detail}`);
   }
+
   return result;
 }
 
@@ -27,16 +32,20 @@ export async function claimAllTheDetails() {
   if (!token) {
     throw new Error("JWT token not found. Please log in again.");
   }
-  let response = await fetch('http://127.0.0.1:8000/claim/all_details', {
+
+  let response = await fetch(`${API_URL}/claim/all_details`, {
     headers: {
       Authorization: `Bearer ${token}`,
-    }
-  })
-  let data = await response.json()
-  if(!response.ok) {
-    throw new Error(`Error: ${data.detail}`)
+    },
+  });
+
+  let data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`Error: ${data.detail}`);
   }
-  return data
+
+  return data;
 }
 
 export async function details() {
@@ -44,15 +53,18 @@ export async function details() {
   if (!token) {
     throw new Error("JWT token not found. Please log in again.");
   }
-  let response = await fetch("http://127.0.0.1:8000/claim/details", {
+
+  let response = await fetch(`${API_URL}/claim/details`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
   let result = await response.json();
+
   if (!response.ok) {
     throw new Error(`${result.detail}`);
   }
+
   return result;
 }

@@ -1,24 +1,25 @@
+import { API_URL } from "../config";
+
 export function generateOtp(email) {
-  return fetch("http://127.0.0.1:8000/generate_otp", {
+  return fetch(`${API_URL}/generate_otp`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      email: email
-    })
-  })
-  .then(async (res) => {
-      let data = await res.json();
-      if (!res.ok) {
-        throw new Error(`${data.detail}`);
-      }
-      return data;
-    })
+      email: email,
+    }),
+  }).then(async (res) => {
+    let data = await res.json();
+    if (!res.ok) {
+      throw new Error(`${data.detail}`);
+    }
+    return data;
+  });
 }
 
 export function userSignup(user) {
-  return fetch("http://127.0.0.1:8000/user_signup", {
+  return fetch(`${API_URL}/user_signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,18 +32,17 @@ export function userSignup(user) {
       password: user.password,
       otp: user.otp,
     }),
-  })
-    .then(async (res) => {
-      let data = await res.json();
-      if (!res.ok) {
-        throw new Error(`${data.detail}`);
-      }
-      return data;
-    })
+  }).then(async (res) => {
+    let data = await res.json();
+    if (!res.ok) {
+      throw new Error(`${data.detail}`);
+    }
+    return data;
+  });
 }
 
 export function adminSignup(admin) {
-  return fetch("http://127.0.0.1:8000/admin_signup", {
+  return fetch(`${API_URL}/admin_signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -53,18 +53,17 @@ export function adminSignup(admin) {
       code: admin.code,
       password: admin.password,
     }),
-  })
-    .then(async (res) => {
-      let data = await res.json();
-      if (!res.ok) {
-        throw new Error(`${data.detail}`);
-      }
-      return data;
-    })
+  }).then(async (res) => {
+    let data = await res.json();
+    if (!res.ok) {
+      throw new Error(`${data.detail}`);
+    }
+    return data;
+  });
 }
 
 export function userLogin(user) {
-  return fetch("http://127.0.0.1:8000/user_login", {
+  return fetch(`${API_URL}/user_login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -73,18 +72,17 @@ export function userLogin(user) {
       email: user.email,
       password: user.password,
     }),
-  })
-    .then(async (res) => {
-      let data = await res.json();
-      if (!res.ok) {
-        throw new Error(`${data.detail}`);
-      }
-      return data
-    })
+  }).then(async (res) => {
+    let data = await res.json();
+    if (!res.ok) {
+      throw new Error(`${data.detail}`);
+    }
+    return data;
+  });
 }
 
 export function adminLogin(user) {
-  return fetch("http://127.0.0.1:8000/admin_login", {
+  return fetch(`${API_URL}/admin_login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -93,29 +91,27 @@ export function adminLogin(user) {
       email: user.email,
       password: user.password,
     }),
-  })
-    .then(async (res) => {
-      let data = await res.json();
-      if (!res.ok) {
-        throw new Error(`${data.detail}`);
-      }
-      return data;
-    })
+  }).then(async (res) => {
+    let data = await res.json();
+    if (!res.ok) {
+      throw new Error(`${data.detail}`);
+    }
+    return data;
+  });
 }
 
 export function updatePassword(data) {
-  return fetch('http://127.0.0.1:8000/user_login/reset_password', {
-    method: 'POST',
+  return fetch(`${API_URL}/user_login/reset_password`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(data)
-  })
-  .then(async (res) => {
-    let data = await res.json()
-    if(!res.ok) {
-      throw new Error(`${data.detail}`)
+    body: JSON.stringify(data),
+  }).then(async (res) => {
+    let data = await res.json();
+    if (!res.ok) {
+      throw new Error(`${data.detail}`);
     }
-    return data
-  })
+    return data;
+  });
 }

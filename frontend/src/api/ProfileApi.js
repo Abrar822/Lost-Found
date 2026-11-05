@@ -1,23 +1,26 @@
 import { getUserToken } from "../helper/getToken";
+import { API_URL } from "../config";
 
 export function getUserDetails() {
-    const token = getUserToken()
-    if (!token) {
-        throw new Error("JWT token not found. Please log in again.");
+  const token = getUserToken();
+
+  if (!token) {
+    throw new Error("JWT token not found. Please log in again.");
+  }
+
+  return fetch(`${API_URL}/user`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).then(async (res) => {
+    let data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(`${data.detail}`);
     }
-    return fetch("http://127.0.0.1:8000/user",{
-        headers:{
-            Authorization: `Bearer ${token}`,
-        }
-    }
-    )
-        .then(async (res) => {
-            let data = await res.json();
-            if (!res.ok) {
-                throw new Error(`${data.detail}`);
-            }
-            return data;
-        })
+
+    return data;
+  });
 }
 
 export async function updateUserDetails(userData) {
@@ -27,7 +30,7 @@ export async function updateUserDetails(userData) {
     throw new Error("JWT token not found. Please log in again.");
   }
 
-  const res = await fetch("http://127.0.0.1:8000/user/edit", {
+  const res = await fetch(`${API_URL}/user/edit`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -41,21 +44,20 @@ export async function updateUserDetails(userData) {
     }),
   });
 
-  
-const data = await res.json();
+  const data = await res.json();
 
-if (!res.ok) {
-  const message = Array.isArray(data.detail)
-    ? data.detail.map((error) => `${error.loc?.join(".")}: ${error.msg}`).join("\n")
-    : data.detail || "Failed to update profile";
+  if (!res.ok) {
+    const message = Array.isArray(data.detail)
+      ? data.detail
+          .map((error) => `${error.loc?.join(".")}: ${error.msg}`)
+          .join("\n")
+      : data.detail || "Failed to update profile";
 
-  throw new Error(message);
+    throw new Error(message);
+  }
+
+  return data;
 }
-
-return data;
-
-}
-
 
 export function getLostItems() {
   const token = getUserToken();
@@ -64,7 +66,7 @@ export function getLostItems() {
     throw new Error("JWT token not found. Please log in again.");
   }
 
-  return fetch("http://127.0.0.1:8000/user/lost-items", {
+  return fetch(`${API_URL}/user/lost-items`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -86,7 +88,7 @@ export function getFoundItems() {
     throw new Error("JWT token not found. Please log in again.");
   }
 
-  return fetch("http://127.0.0.1:8000/user/found-items", {
+  return fetch(`${API_URL}/user/found-items`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
